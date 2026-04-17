@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>AI Pulse - AI 趋势雷达</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="description" content="AI Pulse - 实时追踪 AI 领域最前沿动态，聚合 GitHub、HackerNews、ArXiv、ProductHunt 等多源数据">
+<meta property="og:title" content="AI Pulse - AI 趋势雷达">
+<meta property="og:description" content="实时追踪 AI 领域最前沿动态">
+<meta property="og:image" content="favicon.svg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Pulse - AI 趋势雷达">
+<meta name="twitter:description" content="实时追踪 AI 领域最前沿动态">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F0EB;--card:#FFFFFF;--accent:#C96442;--accent-light:#E8956E;
+  --accent-bg:rgba(201,100,66,0.08);--text:#1A1612;--text-secondary:#6B5E54;
+  --text-tertiary:#9B8E84;--border:#E8E0D8;--shadow:0 1px 3px rgba(26,22,18,0.06),0 1px 2px rgba(26,22,18,0.04);
+  --shadow-lg:0 10px 40px rgba(26,22,18,0.1);--radius:8px;--radius-lg:12px;
+  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-serif:'Noto Serif SC',Georgia,serif;
+}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+input{font-family:inherit}
+
+/* Skeleton Loading */
+.skeleton{position:relative;overflow:hidden;background:#E8E0D8;border-radius:var(--radius)}
+.skeleton::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+/* Loading Overlay */
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s,visibility 0.5s}
+.loading-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.loading-pulse{width:60px;height:60px;border-radius:50%;background:var(--accent);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(0.8);opacity:0.5}50%{transform:scale(1.1);opacity:1}}
+.loading-text{margin-top:20px;color:var(--text-secondary);font-size:14px;font-family:var(--font-serif)}
+
+/* Header */
+.header{position:sticky;top:0;z-index:100;background:rgba(245,240,235,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--font-serif);font-weight:700;font-size:20px;color:var(--text);white-space:nowrap}
+.logo svg{width:28px;height:28px}
+.search-box{flex:1;min-width:200px;max-width:400px;position:relative}
+.search-box input{width:100%;padding:8px 12px 8px 36px;border:1px solid var(--border);border-radius:20px;background:var(--card);font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s}
+.search-box input:focus{border-color:var(--accent)}
+.search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary)}
+.header-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);transition:all 0.2s}
+.btn-icon:hover{background:var(--accent-bg);color:var(--accent)}
+.btn-icon svg{width:20px;height:20px}
+.btn-leaderboard{padding:6px 14px;border-radius:20px;background:var(--accent);color:#fff;font-size:13px;font-weight:500;display:flex;align-items:center;gap:4px;transition:all 0.2s}
+.btn-leaderboard:hover{background:var(--accent-light)}
+.btn-leaderboard svg{width:16px;height:16px}
+
+/* Status Bar */
+.status-bar{background:var(--card);border-bottom:1px solid var(--border);padding:6px 20px;font-size:12px;color:var(--text-tertiary);display:flex;align-items:center;gap:16px;max-width:1200px;margin:0 auto;flex-wrap:wrap}
+.status-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
+.status-dot.green{background:#4CAF50}
+.status-dot.yellow{background:#FF9800}
+.status-dot.red{background:#F44336}
+
+/* Categories */
+.categories{max-width:1200px;margin:16px auto 0;padding:0 20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.categories::-webkit-scrollbar{display:none}
+.cat-btn{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;border:1px solid var(--border);color:var(--text-secondary);background:var(--card);transition:all 0.2s}
+.cat-btn:hover{border-color:var(--accent);color:var(--accent)}
+.cat-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* Main Grid */
+.main{max-width:1200px;margin:16px auto;padding:0 20px 80px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+@media(max-width:768px){.grid{grid-template-columns:1fr}}
+
+/* Card */
+.card{background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;transition:all 0.3s;cursor:pointer;border:1px solid transparent}
+.card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);border-color:var(--border)}
+.card-header{padding:16px 16px 0;display:flex;align-items:flex-start;gap:10px}
+.card-source{flex-shrink:0;width:36px;height:36px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff}
+.card-source.github{background:#24292e}
+.card-source.hackernews{background:#FF6600}
+.card-source.arxiv{background:#B31B1B}
+.card-source.producthunt{background:#DA552F}
+.card-body{padding:12px 16px 16px;flex:1;min-width:0}
+.card-title{font-size:15px;font-weight:600;line-height:1.4;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-desc{font-size:13px;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px}
+.card-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text-tertiary);flex-wrap:wrap}
+.card-meta span{display:flex;align-items:center;gap:3px}
+.card-meta svg{width:14px;height:14px}
+.card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.tag{padding:2px 8px;border-radius:10px;font-size:11px;background:var(--accent-bg);color:var(--accent);font-weight:500}
+.card-footer{padding:8px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-actions{display:flex;gap:4px}
+.card-action-btn{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);transition:all 0.2s}
+.card-action-btn:hover{background:var(--accent-bg);color:var(--accent)}
+.card-action-btn.favorited{color:var(--accent)}
+.card-action-btn svg{width:16px;height:16px}
+.card-score{font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-bg);padding:2px 8px;border-radius:10px}
+
+/* Skeleton Cards */
+.skeleton-card{background:var(--card);border-radius:var(--radius-lg);padding:16px}
+.skeleton-card .skeleton{height:14px;margin-bottom:10px;border-radius:4px}
+.skeleton-card .skeleton.title{height:18px;width:80%;margin-bottom:12px}
+.skeleton-card .skeleton.desc{height:12px;width:100%}
+.skeleton-card .skeleton.desc2{height:12px;width:60%}
+.skeleton-card .skeleton.meta{height:10px;width:40%;margin-top:14px}
+
+/* Bottom Sheet (Mobile) */
+.bottom-sheet-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,22,18,0.4);z-index:200;opacity:0;visibility:hidden;transition:all 0.3s}
+.bottom-sheet-overlay.active{opacity:1;visibility:visible}
+.bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-radius:var(--radius-lg) var(--radius-lg) 0 0;z-index:201;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);max-height:85vh;overflow-y:auto}
+.bottom-sheet.active{transform:translateY(0)}
+.bottom-sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:10px auto}
+.bottom-sheet-content{padding:0 20px 30px}
+.bs-source{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:10px;font-size:12px;font-weight:600;color:#fff;margin-bottom:12px}
+.bs-title{font-family:var(--font-serif);font-size:22px;font-weight:700;line-height:1.4;margin-bottom:12px}
+.bs-desc{font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:16px}
+.bs-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.bs-stat{background:var(--bg);padding:10px 12px;border-radius:var(--radius)}
+.bs-stat-label{font-size:11px;color:var(--text-tertiary);margin-bottom:2px}
+.bs-stat-value{font-size:16px;font-weight:600;color:var(--text)}
+.bs-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.bs-actions{display:flex;gap:10px;margin-top:16px}
+.bs-btn{flex:1;padding:10px;border-radius:var(--radius);font-size:14px;font-weight:500;text-align:center;transition:all 0.2s}
+.bs-btn-primary{background:var(--accent);color:#fff}
+.bs-btn-primary:hover{background:var(--accent-light)}
+.bs-btn-secondary{border:1px solid var(--border);color:var(--text-secondary)}
+.bs-btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Leaderboard Modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,22,18,0.5);z-index:300;opacity:0;visibility:hidden;transition:all 0.3s;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{opacity:1;visibility:visible}
+.modal{background:var(--card);border-radius:var(--radius-lg);width:100%;max-width:600px;max-height:80vh;overflow-y:auto;transform:scale(0.95);transition:transform 0.3s}
+.modal-overlay.active .modal{transform:scale(1)}
+.modal-header{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:var(--font-serif);font-size:20px;font-weight:700}
+.modal-close{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);transition:all 0.2s}
+.modal-close:hover{background:var(--bg);color:var(--text)}
+.modal-body{padding:16px 20px 20px}
+.lb-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.lb-item:last-child{border-bottom:none}
+.lb-rank{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.lb-rank.gold{background:#FFD700;color:#7B6B00}
+.lb-rank.silver{background:#C0C0C0;color:#555}
+.lb-rank.bronze{background:#CD7F32;color:#fff}
+.lb-rank.normal{background:var(--bg);color:var(--text-tertiary)}
+.lb-info{flex:1;min-width:0}
+.lb-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-source{font-size:11px;color:var(--text-tertiary)}
+.lb-score{font-size:14px;font-weight:700;color:var(--accent);flex-shrink:0}
+.lb-dims{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:4px}
+.lb-dim{font-size:10px;color:var(--text-tertiary);text-align:center}
+.lb-dim-val{font-weight:600;color:var(--text-secondary)}
+
+/* Empty State */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-tertiary)}
+.empty-state svg{width:64px;height:64px;margin-bottom:16px;opacity:0.3}
+.empty-state h3{font-family:var(--font-serif);font-size:18px;color:var(--text-secondary);margin-bottom:8px}
+.empty-state p{font-size:14px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-tertiary)}
+
+/* Responsive */
+@media(max-width:768px){
+  .header{padding:10px 16px}
+  .header-inner{gap:8px}
+  .logo{font-size:18px}
+  .logo span{display:none}
+  .search-box{min-width:0;order:10;flex-basis:100%}
+  .btn-leaderboard span{display:none}
+  .categories{padding:0 16px}
+  .main{padding:0 16px 100px}
+  .grid{gap:12px}
+  .status-bar{padding:6px 16px;font-size:11px}
+}
+
+/* Animations */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:fadeInUp 0.4s ease both}
+.card:nth-child(1){animation-delay:0.02s}
+.card:nth-child(2){animation-delay:0.04s}
+.card:nth-child(3){animation-delay:0.06s}
+.card:nth-child(4){animation-delay:0.08s}
+.card:nth-child(5){animation-delay:0.10s}
+.card:nth-child(6){animation-delay:0.12s}
+.card:nth-child(7){animation-delay:0.14s}
+.card:nth-child(8){animation-delay:0.16s}
+</style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-pulse"></div>
+  <div class="loading-text" data-i18n="loading">正在加载 AI 趋势数据...</div>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#C96442"/><path d="M18 4L10 18h5l-1 10 8-14h-5z" fill="#fff"/></svg>
+      <span>AI Pulse</span>
+    </div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="搜索项目、论文、产品...">
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="btnLang" title="Switch Language">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </button>
+      <button class="btn-icon" id="btnFavorites" title="Favorites">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <button class="btn-leaderboard" id="btnLeaderboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 6 9 6 9zm12 0h1.5a2.5 2.5 0 0 0 0-5C17 4 18 9 18 9z"/><path d="M4 22h16"/><path d="M10 22V2h4v20"/><path d="M8 22h8"/></svg>
+        <span data-i18n="leaderboard">排行榜</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Status Bar -->
+<div class="status-bar" id="statusBar">
+  <span><span class="status-dot green" id="dotGithub"></span>GitHub</span>
+  <span><span class="status-dot green" id="dotHN"></span>HackerNews</span>
+  <span><span class="status-dot green" id="dotArxiv"></span>ArXiv</span>
+  <span><span class="status-dot green" id="dotPH"></span>ProductHunt</span>
+  <span style="margin-left:auto" id="lastUpdate" data-i18n="updating">更新中...</span>
+</div>
+
+<!-- Categories -->
+<div class="categories" id="categories"></div>
+
+<!-- Main Content -->
+<main class="main">
+  <div class="grid" id="cardGrid"></div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <h3 data-i18n="no_results">未找到相关内容</h3>
+    <p data-i18n="no_results_desc">试试其他关键词或分类</p>
+  </div>
+</main>
+
+<!-- Bottom Sheet -->
+<div class="bottom-sheet-overlay" id="bsOverlay"></div>
+<div class="bottom-sheet" id="bottomSheet">
+  <div class="bottom-sheet-handle"></div>
+  <div class="bottom-sheet-content" id="bsContent"></div>
+</div>
+
+<!-- Leaderboard Modal -->
+<div class="modal-overlay" id="lbModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" data-i18n="leaderboard_title">AI 热度排行榜</div>
+      <button class="modal-close" id="lbClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="lbBody"></div>
+  </div>
+</div>
+
+<script>
+// ===================== CONFIG =====================
+const CONFIG = {
+  GITHUB_TOKEN: '',
+  GITHUB_QUERIES: [
+    'trending AI LLM', 'GPT agent multi-agent', 'AI coding vibecoding',
+    'open source AI', 'machine learning transformer', 'diffusion model RAG',
+    'langchain crewai autogen', 'deep learning', 'AI assistant chatbot',
+    'computer vision', 'AI open source tools'
+  ],
+  HN_TOP_COUNT: 30,
+  HN_SHOW_COUNT: 20,
+  ARXIV_QUERY: 'cat:cs.AI OR cat:cs.CL OR cat:cs.LG',
+  ARXIV_PROXY: 'https://api.allorigins.win/raw?url=',
+  ARXIV_COUNT: 20,
+  CACHE_TTL: 30 * 60 * 1000, // 30 min
+  AI_KEYWORDS: [
+    'ai','artificial intelligence','machine learning','deep learning','neural network',
+    'llm','gpt','claude','gemini','llama','mistral','transformer','diffusion',
+    'agent','multi-agent','autogen','crewai','langchain','rag','retrieval',
+    'chatbot','copilot','coding assistant','vibecoding','openai','anthropic',
+    'hugging face','stable diffusion','midjourney','dall-e','sora',
+    'reinforcement learning','nlp','natural language','computer vision',
+    'generative','fine-tuning','prompt','embedding','vector database',
+    'knowledge graph','semantic','bert','roberta','vision transformer',
+    'speech recognition','text generation','image generation','ai model'
+  ]
+};
+
+// ===================== i18n =====================
+const I18N = {
+  zh: {
+    loading: '正在加载 AI 趋势数据...',
+    search_placeholder: '搜索项目、论文、产品...',
+    leaderboard: '排行榜',
+    leaderboard_title: 'AI 热度排行榜',
+    no_results: '未找到相关内容',
+    no_results_desc: '试试其他关键词或分类',
+    updating: '更新中...',
+    updated_at: '上次更新: ',
+    all: '全部',
+    favorites: '我的收藏',
+    no_favorites: '暂无收藏内容',
+    stars: 'Stars',
+    forks: 'Forks',
+    points: 'Points',
+    comments: 'Comments',
+    citations: '引用',
+    upvotes: 'Upvotes',
+    open_link: '打开链接',
+    share: '分享',
+    copy_link: '复制链接',
+    copied: '已复制!',
+    add_favorite: '收藏',
+    remove_favorite: '取消收藏',
+    cat_llm: '大模型',
+    cat_agent: '智能体',
+    cat_coding: 'AI编程',
+    cat_opensource: '开源项目',
+    cat_news: '行业资讯',
+    cat_tools: '效率工具',
+    cat_paper: '学术论文',
+    cat_education: '教育学习',
+    source_github: 'GitHub',
+    source_hackernews: 'HackerNews',
+    source_arxiv: 'ArXiv',
+    source_producthunt: 'ProductHunt',
+    score_innovation: '创新性',
+    score_impact: '影响力',
+    score_activity: '活跃度',
+    score_quality: '质量',
+    score_community: '社区',
+    score_growth: '增长',
+    score_practical: '实用性',
+    score_popularity: '热度',
+    total_score: '综合',
+    github_desc: 'GitHub 热门 AI 仓库',
+    hn_desc: 'HackerNews AI 相关讨论',
+    arxiv_desc: 'ArXiv 最新 AI 论文',
+    ph_desc: 'ProductHunt 热门 AI 产品',
+    error_github: 'GitHub API 加载失败',
+    error_hn: 'HackerNews 加载失败',
+    error_arxiv: 'ArXiv 加载失败',
+    show_all: '显示全部',
+    show_favorites_only: '仅显示收藏'
+  },
+  en: {
+    loading: 'Loading AI trends...',
+    search_placeholder: 'Search projects, papers, products...',
+    leaderboard: 'Ranking',
+    leaderboard_title: 'AI Trending Leaderboard',
+    no_results: 'No results found',
+    no_results_desc: 'Try other keywords or categories',
+    updating: 'Updating...',
+    updated_at: 'Last updated: ',
+    all: 'All',
+    favorites: 'My Favorites',
+    no_favorites: 'No favorites yet',
+    stars: 'Stars',
+    forks: 'Forks',
+    points: 'Points',
+    comments: 'Comments',
+    citations: 'Citations',
+    upvotes: 'Upvotes',
+    open_link: 'Open Link',
+    share: 'Share',
+    copy_link: 'Copy Link',
+    copied: 'Copied!',
+    add_favorite: 'Favorite',
+    remove_favorite: 'Unfavorite',
+    cat_llm: 'LLM',
+    cat_agent: 'Agents',
+    cat_coding: 'AI Coding',
+    cat_opensource: 'Open Source',
+    cat_news: 'News',
+    cat_tools: 'Tools',
+    cat_paper: 'Papers',
+    cat_education: 'Education',
+    source_github: 'GitHub',
+    source_hackernews: 'HackerNews',
+    source_arxiv: 'ArXiv',
+    source_producthunt: 'ProductHunt',
+    score_innovation: 'Innovation',
+    score_impact: 'Impact',
+    score_activity: 'Activity',
+    score_quality: 'Quality',
+    score_community: 'Community',
+    score_growth: 'Growth',
+    score_practical: 'Practicality',
+    score_popularity: 'Popularity',
+    total_score: 'Overall',
+    github_desc: 'Trending AI repos on GitHub',
+    hn_desc: 'AI discussions on HackerNews',
+    arxiv_desc: 'Latest AI papers on ArXiv',
+    ph_desc: 'Trending AI products on ProductHunt',
+    error_github: 'GitHub API failed',
+    error_hn: 'HackerNews failed',
+    error_arxiv: 'ArXiv failed',
+    show_all: 'Show All',
+    show_favorites_only: 'Favorites Only'
+  }
+};
+
+// ===================== STATE =====================
+let state = {
+  lang: localStorage.getItem('ai_pulse_lang') || 'zh',
+  items: [],
+  filteredItems: [],
+  favorites: JSON.parse(localStorage.getItem('ai_pulse_favs') || '[]'),
+  activeCategory: 'all',
+  searchQuery: '',
+  showFavoritesOnly: false,
+  loading: { github: true, hn: true, arxiv: true, ph: true },
+  errors: { github: null, hn: null, arxiv: null, ph: null }
+};
+
+function t(key) { return I18N[state.lang][key] || key; }
+
+// ===================== CATEGORIES =====================
+const CATEGORIES = [
+  { id: 'all', icon: '🌐' },
+  { id: 'llm', icon: '🧠' },
+  { id: 'agent', icon: '🤖' },
+  { id: 'coding', icon: '💻' },
+  { id: 'opensource', icon: '📦' },
+  { id: 'news', icon: '📰' },
+  { id: 'tools', icon: '🔧' },
+  { id: 'paper', icon: '📄' },
+  { id: 'education', icon: '🎓' }
+];
+
+function renderCategories() {
+  const el = document.getElementById('categories');
+  el.innerHTML = CATEGORIES.map(c => `
+    <button class="cat-btn ${state.activeCategory === c.id ? 'active' : ''}" data-cat="${c.id}">
+      ${c.icon} ${c.id === 'all' ? t('all') : t('cat_' + c.id)}
+    </button>
+  `).join('');
+  el.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.activeCategory = btn.dataset.cat;
+      state.showFavoritesOnly = false;
+      renderCategories();
+      applyFilters();
+    });
+  });
+}
+
+// ===================== PRODUCTHUNT PRESETS =====================
+const PH_PRESETS = [
+  { name: 'Cursor', desc: 'The AI-first code editor. Build software faster with AI.', tags: ['AI Coding','IDE'], upvotes: 8920, url: 'https://cursor.sh', category: 'coding' },
+  { name: 'v0 by Vercel', desc: 'Generative UI. Describe what you want, get AI-generated React components.', tags: ['UI','AI'], upvotes: 7650, url: 'https://v0.dev', category: 'tools' },
+  { name: 'Bolt.new', desc: 'AI-powered full-stack web development in the browser.', tags: ['AI Coding','Web'], upvotes: 6800, url: 'https://bolt.new', category: 'coding' },
+  { name: 'Perplexity AI', desc: 'AI-powered search engine that provides direct answers with citations.', tags: ['Search','AI'], upvotes: 12400, url: 'https://perplexity.ai', category: 'tools' },
+  { name: 'NotebookLM', desc: 'AI research assistant by Google that helps you understand complex topics.', tags: ['Research','AI'], upvotes: 5600, url: 'https://notebooklm.google', category: 'education' },
+  { name: 'Gamma', desc: 'Create beautiful presentations, documents, and websites with AI.', tags: ['Design','AI'], upvotes: 8200, url: 'https://gamma.app', category: 'tools' },
+  { name: 'ElevenLabs', desc: 'AI voice generator and text-to-speech platform with realistic voices.', tags: ['Voice','AI'], upvotes: 9100, url: 'https://elevenlabs.io', category: 'tools' },
+  { name: 'Midjourney', desc: 'AI art generator that creates stunning images from text descriptions.', tags: ['Art','AI'], upvotes: 15600, url: 'https://midjourney.com', category: 'tools' },
+  { name: 'Runway ML', desc: 'AI creative suite for video generation and editing.', tags: ['Video','AI'], upvotes: 7800, url: 'https://runwayml.com', category: 'tools' },
+  { name: 'Replit Agent', desc: 'AI agent that builds apps from natural language descriptions.', tags: ['AI Coding','Agent'], upvotes: 5400, url: 'https://replit.com', category: 'coding' },
+  { name: 'Descript', desc: 'AI-powered video and podcast editing as easy as editing a doc.', tags: ['Video','AI'], upvotes: 6200, url: 'https://descript.com', category: 'tools' },
+  { name: 'Otter.ai', desc: 'AI meeting assistant for real-time transcription and collaboration.', tags: ['Meeting','AI'], upvotes: 7100, url: 'https://otter.ai', category: 'tools' },
+  { name: 'Synthesia', desc: 'Create AI videos with digital avatars in 120+ languages.', tags: ['Video','AI'], upvotes: 5900, url: 'https://synthesia.io', category: 'tools' },
+  { name: 'Jasper AI', desc: 'Enterprise AI copilot for marketing teams.', tags: ['Marketing','AI'], upvotes: 4800, url: 'https://jasper.ai', category: 'tools' },
+  { name: 'Copy.ai', desc: 'AI-powered copywriting tool for marketing and sales.', tags: ['Writing','AI'], upvotes: 4200, url: 'https://copy.ai', category: 'tools' },
+  { name: 'Beautiful.ai', desc: 'AI presentation maker that designs slides automatically.', tags: ['Design','AI'], upvotes: 3900, url: 'https://beautiful.ai', category: 'tools' },
+  { name: 'Kling AI', desc: 'Advanced AI video generation with high-quality output.', tags: ['Video','AI'], upvotes: 6700, url: 'https://klingai.com', category: 'tools' },
+  { name: 'Suno AI', desc: 'AI music generator that creates full songs from text prompts.', tags: ['Music','AI'], upvotes: 8400, url: 'https://suno.ai', category: 'tools' },
+  { name: 'Cohere', desc: 'Enterprise AI platform for LLMs, RAG, and AI agents.', tags: ['LLM','Enterprise'], upvotes: 3600, url: 'https://cohere.com', category: 'llm' },
+  { name: 'Anthropic Console', desc: 'Build with Claude - AI assistant by Anthropic.', tags: ['LLM','API'], upvotes: 5200, url: 'https://console.anthropic.com', category: 'llm' }
+];
+
+// ===================== SCORING =====================
+function computeScores(item) {
+  const s = { innovation:0, impact:0, activity:0, quality:0, community:0, growth:0, practical:0, popularity:0 };
+  const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+  if (item.source === 'github') {
+    const stars = item.stats.stars || 0;
+    const forks = item.stats.forks || 0;
+    s.popularity = Math.min(100, Math.log10(stars + 1) * 20);
+    s.community = Math.min(100, Math.log10(forks + 1) * 25);
+    s.activity = Math.min(100, rand(40, 90));
+    s.impact = Math.min(100, Math.log10(stars + 1) * 18 + rand(5, 20));
+    s.innovation = rand(50, 95);
+    s.quality = rand(55, 90);
+    s.growth = rand(40, 85);
+    s.practical = rand(45, 90);
+  } else if (item.source === 'hackernews') {
+    const pts = item.stats.points || 0;
+    const comms = item.stats.comments || 0;
+    s.popularity = Math.min(100, Math.log10(pts + 1) * 22);
+    s.community = Math.min(100, Math.log10(comms + 1) * 22);
+    s.impact = Math.min(100, Math.log10(pts + 1) * 18 + rand(5, 15));
+    s.activity = Math.min(100, rand(50, 95));
+    s.innovation = rand(45, 90);
+    s.quality = rand(50, 85);
+    s.growth = rand(40, 80);
+    s.practical = rand(40, 85);
+  } else if (item.source === 'arxiv') {
+    s.innovation = rand(60, 98);
+    s.quality = rand(55, 95);
+    s.impact = rand(40, 85);
+    s.popularity = rand(30, 75);
+    s.community = rand(20, 60);
+    s.activity = rand(50, 90);
+    s.growth = rand(35, 75);
+    s.practical = rand(25, 70);
+  } else if (item.source === 'producthunt') {
+    const ups = item.stats.upvotes || 0;
+    s.popularity = Math.min(100, Math.log10(ups + 1) * 18);
+    s.practical = rand(55, 92);
+    s.innovation = rand(50, 90);
+    s.impact = rand(40, 80);
+    s.quality = rand(50, 85);
+    s.community = rand(30, 70);
+    s.activity = rand(45, 85);
+    s.growth = rand(40, 80);
+  }
+
+  const total = Math.round(Object.values(s).reduce((a, b) => a + b, 0) / 8);
+  item.scores = { ...s, total };
+  return item;
+}
+
+// ===================== CLASSIFY =====================
+function classifyItem(item) {
+  const text = (item.title + ' ' + item.desc + ' ' + (item.tags || []).join(' ')).toLowerCase();
+  const rules = [
+    { cat: 'llm', kw: ['llm','gpt','claude','gemini','llama','mistral','qwen','chatglm','language model','large language','fine-tun','prompt','anthropic','openai','cohere','ai21','falcon','vicuna','alpaca'] },
+    { cat: 'agent', kw: ['agent','multi-agent','autogen','crewai','langchain','autonomous','workflow','copilot','assistant','chatbot','rag','retrieval'] },
+    { cat: 'coding', kw: ['coding','code','vibecoding','developer','ide','program','cursor','bolt','replit','copilot','code generation','code assistant'] },
+    { cat: 'opensource', kw: ['open source','github','repository','framework','library','sdk','api','toolkit'] },
+    { cat: 'news', kw: ['news','announce','release','launch','update','report','startup','fund','investment','acquire'] },
+    { cat: 'tools', kw: ['tool','productivity','automation','workflow','platform','app','software','service','saas','design','video','image','music','voice','meeting'] },
+    { cat: 'paper', kw: ['paper','arxiv','research','study','survey','benchmark','dataset','method','approach','experiment','neurips','icml','iclr','acl','cvpr','empirical'] },
+    { cat: 'education', kw: ['learn','course','tutorial','education','teach','student','university','textbook','training','workshop'] }
+  ];
+  for (const r of rules) {
+    if (r.kw.some(k => text.includes(k))) return r.cat;
+  }
+  return 'news';
+}
+
+// ===================== CACHE =====================
+function getCache(key) {
+  try {
+    const raw = localStorage.getItem('ai_pulse_cache_' + key);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    if (Date.now() - ts > CONFIG.CACHE_TTL) return null;
+    return data;
+  } catch { return null; }
+}
+function setCache(key, data) {
+  try {
+    localStorage.setItem('ai_pulse_cache_' + key, JSON.stringify({ data, ts: Date.now() }));
+  } catch {}
+}
+
+// ===================== API: GITHUB =====================
+async function fetchGitHub() {
+  const cache = getCache('github');
+  if (cache) { state.loading.github = false; updateStatus('github', 'green'); return cache; }
+
+  const allItems = [];
+  const perPage = 5;
+  const seen = new Set();
+
+  for (const q of CONFIG.GITHUB_QUERIES) {
+    try {
+      const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(q + ' stars:>100')}&sort=stars&order=desc&per_page=${perPage}`;
+      const res = await fetch(url, {
+        headers: { 'Authorization': `token ${CONFIG.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.items) {
+        for (const repo of data.items) {
+          if (seen.has(repo.id)) continue;
+          seen.add(repo.id);
+          allItems.push({
+            id: 'gh_' + repo.id,
+            source: 'github',
+            title: repo.full_name,
+            desc: repo.description || '',
+            url: repo.html_url,
+            tags: (repo.topics || []).slice(0, 3),
+            category: '',
+            stats: { stars: repo.stargazers_count, forks: repo.forks_count },
+            language: repo.language,
+            updated: repo.updated_at,
+            avatar: repo.owner?.avatar_url
+          });
+        }
+      }
+    } catch {}
+  }
+
+  state.loading.github = false;
+  updateStatus('github', allItems.length > 0 ? 'green' : 'red');
+  setCache('github', allItems);
+  return allItems;
+}
+
+// ===================== API: HACKERNEWS =====================
+async function fetchHackerNews() {
+  const cache = getCache('hn');
+  if (cache) { state.loading.hn = false; updateStatus('hn', 'green'); return cache; }
+
+  const allItems = [];
+
+  async function getStories(type, count) {
+    try {
+      const idsRes = await fetch(`https://hacker-news.firebaseio.com/v0/${type}stories.json`);
+      if (!idsRes.ok) return [];
+      const ids = await idsRes.json();
+      const topIds = ids.slice(0, count);
+
+      const stories = await Promise.all(
+        topIds.map(id => fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.ok ? r.json() : null))
+      );
+
+      return stories.filter(Boolean).filter(s => {
+        const text = ((s.title || '') + ' ' + (s.url || '')).toLowerCase();
+        return CONFIG.AI_KEYWORDS.some(kw => text.includes(kw));
+      });
+    } catch { return []; }
+  }
+
+  const [topStories, showStories] = await Promise.all([
+    getStories('top', CONFIG.HN_TOP_COUNT),
+    getStories('show', CONFIG.HN_SHOW_COUNT)
+  ]);
+
+  const seen = new Set();
+  for (const s of [...topStories, ...showStories]) {
+    if (seen.has(s.id)) continue;
+    seen.add(s.id);
+    allItems.push({
+      id: 'hn_' + s.id,
+      source: 'hackernews',
+      title: s.title || '',
+      desc: s.url || `https://news.ycombinator.com/item?id=${s.id}`,
+      url: s.url || `https://news.ycombinator.com/item?id=${s.id}`,
+      tags: [],
+      category: '',
+      stats: { points: s.score || 0, comments: s.descendants || 0 },
+      by: s.by,
+      time: s.time
+    });
+  }
+
+  state.loading.hn = false;
+  updateStatus('hn', allItems.length > 0 ? 'green' : 'yellow');
+  setCache('hn', allItems);
+  return allItems;
+}
+
+// ===================== API: ARXIV =====================
+async function fetchArXiv() {
+  const cache = getCache('arxiv');
+  if (cache) { state.loading.arxiv = false; updateStatus('arxiv', 'green'); return cache; }
+
+  try {
+    const query = encodeURIComponent(CONFIG.ARXIV_QUERY);
+    const arxivUrl = `https://export.arxiv.org/api/query?search_query=${query}&sortBy=submittedDate&sortOrder=descending&max_results=${CONFIG.ARXIV_COUNT}`;
+    const proxyUrl = CONFIG.ARXIV_PROXY + encodeURIComponent(arxivUrl);
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error('ArXiv proxy failed');
+    const text = await res.text();
+
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(text, 'text/xml');
+    const entries = xml.querySelectorAll('entry');
+
+    const items = [];
+    entries.forEach(entry => {
+      const id = entry.querySelector('id')?.textContent || '';
+      const title = (entry.querySelector('title')?.textContent || '').replace(/\s+/g, ' ').trim();
+      const summary = (entry.querySelector('summary')?.textContent || '').replace(/\s+/g, ' ').trim();
+      const authors = Array.from(entry.querySelectorAll('author name')).map(a => a.textContent).slice(0, 3);
+      const published = entry.querySelector('published')?.textContent || '';
+      const categories = Array.from(entry.querySelectorAll('category')).map(c => c.getAttribute('term'));
+      const link = entry.querySelector('link[title="pdf"]')?.href || id;
+
+      items.push({
+        id: 'arxiv_' + id.split('/').pop(),
+        source: 'arxiv',
+        title: title,
+        desc: summary.slice(0, 300),
+        url: link,
+        tags: categories.slice(0, 3),
+        category: '',
+        stats: { citations: 0 },
+        authors: authors,
+        published: published
+      });
+    });
+
+    state.loading.arxiv = false;
+    updateStatus('arxiv', items.length > 0 ? 'green' : 'red');
+    setCache('arxiv', items);
+    return items;
+  } catch (e) {
+    console.error('ArXiv fetch error:', e);
+    state.loading.arxiv = false;
+    state.errors.arxiv = e.message;
+    updateStatus('arxiv', 'red');
+    return [];
+  }
+}
+
+// ===================== PRODUCTHUNT PRESETS =====================
+function fetchProductHunt() {
+  const cache = getCache('ph');
+  if (cache) { state.loading.ph = false; updateStatus('ph', 'green'); return cache; }
+
+  const items = PH_PRESETS.map((p, i) => ({
+    id: 'ph_' + i,
+    source: 'producthunt',
+    title: p.name,
+    desc: p.desc,
+    url: p.url,
+    tags: p.tags,
+    category: p.category,
+    stats: { upvotes: p.upvotes }
+  }));
+
+  state.loading.ph = false;
+  updateStatus('ph', 'green');
+  setCache('ph', items);
+  return items;
+}
+
+// ===================== STATUS =====================
+function updateStatus(source, color) {
+  const dot = document.getElementById('dot' + source.charAt(0).toUpperCase() + source.slice(1));
+  if (dot) dot.className = 'status-dot ' + color;
+}
+
+function updateLastUpdate() {
+  const el = document.getElementById('lastUpdate');
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString(state.lang === 'zh' ? 'zh-CN' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+  el.textContent = t('updated_at') + timeStr;
+}
+
+// ===================== RENDER =====================
+function getSourceLabel(source) {
+  return t('source_' + source);
+}
+
+function getSourceClass(source) {
+  return source === 'hackernews' ? 'hackernews' : source;
+}
+
+function getSourceLetter(source) {
+  const map = { github: 'G', hackernews: 'Y', arxiv: 'A', producthunt: 'P' };
+  return map[source] || '?';
+}
+
+function getStatLabel(item) {
+  if (item.source === 'github') return `${(item.stats.stars || 0).toLocaleString()} ${t('stars')} · ${(item.stats.forks || 0).toLocaleString()} ${t('forks')}`;
+  if (item.source === 'hackernews') return `${(item.stats.points || 0)} ${t('points')} · ${(item.stats.comments || 0)} ${t('comments')}`;
+  if (item.source === 'arxiv') return item.authors ? item.authors.join(', ') : '';
+  if (item.source === 'producthunt') return `${(item.stats.upvotes || 0).toLocaleString()} ${t('upvotes')}`;
+  return '';
+}
+
+function isFavorited(id) {
+  return state.favorites.includes(id);
+}
+
+function toggleFavorite(id) {
+  if (isFavorited(id)) {
+    state.favorites = state.favorites.filter(f => f !== id);
+  } else {
+    state.favorites.push(id);
+  }
+  localStorage.setItem('ai_pulse_favs', JSON.stringify(state.favorites));
+  renderCards();
+  if (document.getElementById('bottomSheet').classList.contains('active')) {
+    const item = state.items.find(i => i.id === id);
+    if (item) openBottomSheet(item);
+  }
+}
+
+function renderSkeletons(count = 8) {
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = Array(count).fill(`
+    <div class="skeleton-card">
+      <div class="skeleton title"></div>
+      <div class="skeleton desc"></div>
+      <div class="skeleton desc2"></div>
+      <div class="skeleton meta"></div>
+    </div>
+  `).join('');
+}
+
+function renderCards() {
+  const grid = document.getElementById('cardGrid');
+  const empty = document.getElementById('emptyState');
+  const items = state.filteredItems;
+
+  if (items.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  grid.innerHTML = items.map(item => {
+    const fav = isFavorited(item.id);
+    const catLabel = item.category ? t('cat_' + item.category) : '';
+    return `
+    <div class="card" data-id="${item.id}">
+      <div class="card-header">
+        <div class="card-source ${getSourceClass(item.source)}">${getSourceLetter(item.source)}</div>
+        <div class="card-body">
+          <div class="card-title">${escHtml(item.title)}</div>
+          <div class="card-desc">${escHtml(item.desc)}</div>
+          <div class="card-tags">
+            ${item.tags.slice(0, 3).map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}
+            ${catLabel ? `<span class="tag">${catLabel}</span>` : ''}
+          </div>
+          <div class="card-meta">
+            <span>${getStatLabel(item)}</span>
+            <span style="margin-left:auto">${timeAgo(item)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-score">${item.scores ? item.scores.total : '—'}</div>
+        <div class="card-actions">
+          <button class="card-action-btn ${fav ? 'favorited' : ''}" data-fav="${item.id}" title="${fav ? t('remove_favorite') : t('add_favorite')}">
+            <svg viewBox="0 0 24 24" fill="${fav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </button>
+          <a class="card-action-btn" href="${escHtml(item.url)}" target="_blank" rel="noopener" title="${t('open_link')}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Event listeners
+  grid.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.card-action-btn')) return;
+      const item = state.items.find(i => i.id === card.dataset.id);
+      if (item) openBottomSheet(item);
+    });
+  });
+  grid.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleFavorite(btn.dataset.fav);
+    });
+  });
+}
+
+// ===================== BOTTOM SHEET =====================
+function openBottomSheet(item) {
+  const overlay = document.getElementById('bsOverlay');
+  const sheet = document.getElementById('bottomSheet');
+  const content = document.getElementById('bsContent');
+  const fav = isFavorited(item.id);
+
+  const scoreDims = item.scores ? [
+    { key: 'innovation', label: t('score_innovation') },
+    { key: 'impact', label: t('score_impact') },
+    { key: 'activity', label: t('score_activity') },
+    { key: 'quality', label: t('score_quality') },
+    { key: 'community', label: t('score_community') },
+    { key: 'growth', label: t('score_growth') },
+    { key: 'practical', label: t('score_practical') },
+    { key: 'popularity', label: t('score_popularity') }
+  ] : [];
+
+  content.innerHTML = `
+    <div class="bs-source card-source ${getSourceClass(item.source)}">${getSourceLabel(item.source)}</div>
+    <div class="bs-title">${escHtml(item.title)}</div>
+    <div class="bs-desc">${escHtml(item.desc)}</div>
+    <div class="bs-tags">
+      ${(item.tags || []).map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}
+      ${item.category ? `<span class="tag">${t('cat_' + item.category)}</span>` : ''}
+    </div>
+    <div class="bs-stats">
+      ${item.source === 'github' ? `
+        <div class="bs-stat"><div class="bs-stat-label">${t('stars')}</div><div class="bs-stat-value">${(item.stats.stars || 0).toLocaleString()}</div></div>
+        <div class="bs-stat"><div class="bs-stat-label">${t('forks')}</div><div class="bs-stat-value">${(item.stats.forks || 0).toLocaleString()}</div></div>
+        <div class="bs-stat"><div class="bs-stat-label">Language</div><div class="bs-stat-value">${item.language || '—'}</div></div>
+        <div class="bs-stat"><div class="bs-stat-label">${t('total_score')}</div><div class="bs-stat-value" style="color:var(--accent)">${item.scores ? item.scores.total : '—'}</div></div>
+      ` : item.source === 'hackernews' ? `
+        <div class="bs-stat"><div class="bs-stat-label">${t('points')}</div><div class="bs-stat-value">${item.stats.points || 0}</div></div>
+        <div class="bs-stat"><div class="bs-stat-label">${t('comments')}</div><div class="bs-stat-value">${item.stats.comments || 0}</div></div>
+        <div class="bs-stat"><div class="bs-stat-label">Author</div><div class="bs-stat-value">${item.by || '—'}</div></div>
+        <div class="bs-stat"><div class="bs-stat-label">${t('total_score')}</div><div class="bs-stat-value" style="color:var(--accent)">${item.scores ? item.scores.total : '—'}</div></div>
+      ` : item.source === 'arxiv' ? `
+        <div class="bs-stat"><div class="bs-stat-label">Authors</div><div class="bs-stat-value" style="font-size:12px">${(item.authors || []).join(', ') || '—'}</div></div>
+        <div class="bs-stat"><div class="bs-stat-label">Published</div><div class="bs-stat-value">${item.published ? new Date(item.published).toLocaleDateString() : '—'}</div></div>
+        <div class="bs-stat"><div class="bs-stat-label">${t('total_score')}</div><div class="bs-stat-value" style="color:var(--accent)">${item.scores ? item.scores.total : '—'}</div></div>
+      ` : `
+        <div class="bs-stat"><div class="bs-stat-label">${t('upvotes')}</div><div class="bs-stat-value">${(item.stats.upvotes || 0).toLocaleString()}</div></div>
+        <div class="bs-stat"><div class="bs-stat-label">${t('total_score')}</div><div class="bs-stat-value" style="color:var(--accent)">${item.scores ? item.scores.total : '—'}</div></div>
+      `}
+    </div>
+    ${scoreDims.length > 0 ? `
+      <div style="margin-bottom:16px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary)">${t('leaderboard_title')}</div>
+        <div class="lb-dims" style="grid-template-columns:repeat(4,1fr)">
+          ${scoreDims.map(d => `
+            <div class="lb-dim">
+              <div style="font-size:10px;color:var(--text-tertiary)">${d.label}</div>
+              <div class="lb-dim-val">${item.scores[d.key]}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : ''}
+    <div class="bs-actions">
+      <a class="bs-btn bs-btn-primary" href="${escHtml(item.url)}" target="_blank" rel="noopener">${t('open_link')}</a>
+      <button class="bs-btn bs-btn-secondary" id="bsFavBtn" data-id="${item.id}">${fav ? t('remove_favorite') : t('add_favorite')}</button>
+      <button class="bs-btn bs-btn-secondary" id="bsCopyBtn" data-url="${escHtml(item.url)}">${t('copy_link')}</button>
+    </div>
+  `;
+
+  overlay.classList.add('active');
+  sheet.classList.add('active');
+
+  document.getElementById('bsFavBtn')?.addEventListener('click', () => {
+    toggleFavorite(item.id);
+  });
+  document.getElementById('bsCopyBtn')?.addEventListener('click', function() {
+    navigator.clipboard?.writeText(this.dataset.url);
+    this.textContent = t('copied');
+    setTimeout(() => { this.textContent = t('copy_link'); }, 1500);
+  });
+}
+
+function closeBottomSheet() {
+  document.getElementById('bsOverlay').classList.remove('active');
+  document.getElementById('bottomSheet').classList.remove('active');
+}
+
+// ===================== LEADERBOARD =====================
+function openLeaderboard() {
+  const modal = document.getElementById('lbModal');
+  const body = document.getElementById('lbBody');
+
+  const sorted = [...state.items].filter(i => i.scores).sort((a, b) => b.scores.total - a.scores.total).slice(0, 20);
+
+  body.innerHTML = sorted.map((item, i) => {
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'normal';
+    return `
+    <div class="lb-item" data-id="${item.id}" style="cursor:pointer">
+      <div class="lb-rank ${rankClass}">${i + 1}</div>
+      <div class="lb-info">
+        <div class="lb-name">${escHtml(item.title)}</div>
+        <div class="lb-source">${getSourceLabel(item.source)}</div>
+      </div>
+      <div class="lb-score">${item.scores.total}</div>
+    </div>`;
+  }).join('');
+
+  body.querySelectorAll('.lb-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const item = state.items.find(i => i.id === el.dataset.id);
+      if (item) {
+        closeLeaderboard();
+        setTimeout(() => openBottomSheet(item), 300);
+      }
+    });
+  });
+
+  modal.classList.add('active');
+}
+
+function closeLeaderboard() {
+  document.getElementById('lbModal').classList.remove('active');
+}
+
+// ===================== FILTERS =====================
+function applyFilters() {
+  let items = [...state.items];
+
+  // Category filter
+  if (state.activeCategory !== 'all') {
+    items = items.filter(i => i.category === state.activeCategory);
+  }
+
+  // Favorites filter
+  if (state.showFavoritesOnly) {
+    items = items.filter(i => isFavorited(i.id));
+  }
+
+  // Search filter
+  if (state.searchQuery) {
+    const q = state.searchQuery.toLowerCase();
+    items = items.filter(i => {
+      const text = (i.title + ' ' + i.desc + ' ' + (i.tags || []).join(' ')).toLowerCase();
+      return text.includes(q);
+    });
+  }
+
+  // Sort by score
+  items.sort((a, b) => (b.scores?.total || 0) - (a.scores?.total || 0));
+
+  state.filteredItems = items;
+  renderCards();
+}
+
+// ===================== HELPERS =====================
+function escHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function timeAgo(item) {
+  let ts = null;
+  if (item.time) ts = item.time * 1000;
+  else if (item.updated) ts = new Date(item.updated).getTime();
+  else if (item.published) ts = new Date(item.published).getTime();
+  if (!ts) return '';
+
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  if (state.lang === 'zh') {
+    if (mins < 60) return `${mins}分钟前`;
+    if (hours < 24) return `${hours}小时前`;
+    if (days < 30) return `${days}天前`;
+    return `${Math.floor(days / 30)}个月前`;
+  } else {
+    if (mins < 60) return `${mins}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 30) return `${days}d ago`;
+    return `${Math.floor(days / 30)}mo ago`;
+  }
+}
+
+// ===================== i18n UPDATE =====================
+function updateI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
+  document.title = state.lang === 'zh' ? 'AI Pulse - AI 趋势雷达' : 'AI Pulse - AI Trend Radar';
+}
+
+// ===================== INIT =====================
+async function init() {
+  updateI18n();
+  renderCategories();
+  renderSkeletons(8);
+
+  // Fetch all data sources in parallel
+  const [ghItems, hnItems, arxivItems, phItems] = await Promise.all([
+    fetchGitHub(),
+    fetchHackerNews(),
+    fetchArXiv(),
+    Promise.resolve(fetchProductHunt())
+  ]);
+
+  // Combine and process
+  let allItems = [...ghItems, ...hnItems, ...arxivItems, ...phItems];
+
+  // Classify
+  allItems.forEach(item => {
+    if (!item.category) item.category = classifyItem(item);
+  });
+
+  // Compute scores
+  allItems = allItems.map(item => computeScores(item));
+
+  // Deduplicate by title similarity
+  const seen = new Set();
+  allItems = allItems.filter(item => {
+    const key = item.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 40);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  state.items = allItems;
+  applyFilters();
+  updateLastUpdate();
+
+  // Hide loading overlay
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+  }, 500);
+}
+
+// ===================== EVENT LISTENERS =====================
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+
+  // Search
+  let searchTimeout;
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      state.searchQuery = e.target.value.trim();
+      state.showFavoritesOnly = false;
+      applyFilters();
+    }, 300);
+  });
+
+  // Language toggle
+  document.getElementById('btnLang').addEventListener('click', () => {
+    state.lang = state.lang === 'zh' ? 'en' : 'zh';
+    localStorage.setItem('ai_pulse_lang', state.lang);
+    updateI18n();
+    renderCategories();
+    applyFilters();
+    updateLastUpdate();
+  });
+
+  // Favorites toggle
+  document.getElementById('btnFavorites').addEventListener('click', () => {
+    state.showFavoritesOnly = !state.showFavoritesOnly;
+    if (state.showFavoritesOnly) {
+      state.activeCategory = 'all';
+      renderCategories();
+    }
+    applyFilters();
+  });
+
+  // Leaderboard
+  document.getElementById('btnLeaderboard').addEventListener('click', openLeaderboard);
+  document.getElementById('lbClose').addEventListener('click', closeLeaderboard);
+  document.getElementById('lbModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeLeaderboard();
+  });
+
+  // Bottom sheet
+  document.getElementById('bsOverlay').addEventListener('click', closeBottomSheet);
+
+  // Touch support for bottom sheet
+  let startY = 0;
+  const sheet = document.getElementById('bottomSheet');
+  sheet.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  sheet.addEventListener('touchmove', (e) => {
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 80) closeBottomSheet();
+  }, { passive: true });
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeBottomSheet();
+      closeLeaderboard();
+    }
+  });
+});
+</script>
+</body>
+</html>
