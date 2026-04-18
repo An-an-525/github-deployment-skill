@@ -13,6 +13,10 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AI Pulse - AI 趋势雷达">
 <meta name="twitter:description" content="实时追踪 AI 领域最前沿动态">
+<!-- 禁止浏览器缓存，确保始终加载最新版本 -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
 <!-- Markdown 渲染与代码高亮 -->
@@ -66,7 +70,7 @@ input{font-family:inherit}
 .search-box input{width:100%;padding:8px 32px 8px 36px;border:1px solid var(--border);border-radius:20px;background:var(--card);font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s}
 .search-box input:focus{border-color:var(--accent)}
 .search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary)}
-.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);transition:all 0.2s;background:none;border:none;cursor:pointer;padding:0}
+.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);transition:all 0.2s;background:none;border:none;cursor:pointer;padding:0;z-index:2}
 .search-clear:hover{background:var(--accent-bg);color:var(--accent)}
 .header-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
 .btn-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);transition:all 0.2s}
@@ -449,6 +453,8 @@ input{font-family:inherit}
 <script>
 // ===================== 配置 =====================
 const CONFIG = {
+  // 缓存版本号：更新此值会自动清除所有旧缓存
+  CACHE_VERSION: 'v3.2',
   // GitHub 搜索关键词（25个，覆盖面广）
   GITHUB_QUERIES: [
     'trending AI LLM', 'GPT agent multi-agent', 'AI coding vibecoding',
@@ -1772,20 +1778,20 @@ function renderCards() {
 function setupCardClickDelegation() {
   const grid = document.getElementById('cardGrid');
   grid.addEventListener('click', (e) => {
+    // 优先处理收藏按钮点击
+    const favBtn = e.target.closest('[data-fav]');
+    if (favBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleFavorite(favBtn.dataset.fav);
+      return;
+    }
     // 排除"打开链接"(a标签)和"收藏"(button)的点击，避免冲突
     if (e.target.closest('a') || e.target.closest('button')) return;
     const card = e.target.closest('.card');
     if (card && card.dataset.id) {
       const item = state.items.find(i => i.id === card.dataset.id);
       if (item) openBottomSheet(item);
-    }
-  });
-  // 收藏按钮使用事件委托
-  grid.addEventListener('click', (e) => {
-    const favBtn = e.target.closest('[data-fav]');
-    if (favBtn) {
-      e.stopPropagation();
-      toggleFavorite(favBtn.dataset.fav);
     }
   });
 }
@@ -2309,6 +2315,18 @@ async function refreshData(silent = false) {
 
 // ===================== 初始化 =====================
 async function init() {
+  // 检查缓存版本号，版本不匹配则清除所有缓存
+  const storedVersion = localStorage.getItem('ai_pulse_cache_version');
+  if (storedVersion !== CONFIG.CACHE_VERSION) {
+    clearAllCache();
+    // 同时清除 README 缓存
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith('readme_')) localStorage.removeItem(k);
+    });
+    localStorage.setItem('ai_pulse_cache_version', CONFIG.CACHE_VERSION);
+    console.log(`[AI Pulse] 缓存版本从 ${storedVersion || '无'} 更新到 ${CONFIG.CACHE_VERSION}，已清除所有旧缓存`);
+  }
+
   updateI18n();
   renderCategories();
   renderSourceFilter();
