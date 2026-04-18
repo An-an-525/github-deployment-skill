@@ -43,6 +43,16 @@ input{font-family:inherit}
 @keyframes pulse{0%,100%{transform:scale(0.8);opacity:0.5}50%{transform:scale(1.1);opacity:1}}
 .loading-text{margin-top:20px;color:var(--text-secondary);font-size:14px;font-family:var(--font-serif)}
 
+/* Toast */
+.toast-container{position:fixed;top:80px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{padding:12px 20px;border-radius:var(--radius);font-size:13px;font-weight:500;color:#fff;pointer-events:auto;animation:toastIn 0.3s ease,toastOut 0.3s ease 2.7s forwards;max-width:360px;box-shadow:var(--shadow-lg)}
+.toast.error{background:#E53935}
+.toast.success{background:#43A047}
+.toast.warning{background:#FB8C00}
+.toast.info{background:#1E88E5}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
+
 /* Header */
 .header{position:sticky;top:0;z-index:100;background:rgba(245,240,235,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px}
 .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -60,6 +70,9 @@ input{font-family:inherit}
 .btn-leaderboard:hover{background:var(--accent-light)}
 .btn-leaderboard svg{width:16px;height:16px}
 
+/* Brand Bar */
+.brand-bar{text-align:center;padding:4px 20px;font-size:11px;color:var(--text-tertiary);background:var(--card);border-bottom:1px solid var(--border)}
+
 /* Status Bar */
 .status-bar{background:var(--card);border-bottom:1px solid var(--border);padding:6px 20px;font-size:12px;color:var(--text-tertiary);display:flex;align-items:center;gap:16px;max-width:1200px;margin:0 auto;flex-wrap:wrap}
 .status-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
@@ -67,8 +80,15 @@ input{font-family:inherit}
 .status-dot.yellow{background:#FF9800}
 .status-dot.red{background:#F44336}
 
+/* Source Filter */
+.source-filter{max-width:1200px;margin:12px auto 0;padding:0 20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.source-filter::-webkit-scrollbar{display:none}
+.sf-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;border:1px solid var(--border);color:var(--text-secondary);background:var(--card);transition:all 0.2s}
+.sf-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sf-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
 /* Categories */
-.categories{max-width:1200px;margin:16px auto 0;padding:0 20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.categories{max-width:1200px;margin:8px auto 0;padding:0 20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .categories::-webkit-scrollbar{display:none}
 .cat-btn{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;border:1px solid var(--border);color:var(--text-secondary);background:var(--card);transition:all 0.2s}
 .cat-btn:hover{border-color:var(--accent);color:var(--accent)}
@@ -112,6 +132,10 @@ input{font-family:inherit}
 .skeleton-card .skeleton.desc2{height:12px;width:60%}
 .skeleton-card .skeleton.meta{height:10px;width:40%;margin-top:14px}
 
+/* Load More Sentinel */
+.load-more-sentinel{height:1px;width:100%}
+.load-more-indicator{text-align:center;padding:20px;color:var(--text-tertiary);font-size:13px}
+
 /* Bottom Sheet (Mobile) */
 .bottom-sheet-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,22,18,0.4);z-index:200;opacity:0;visibility:hidden;transition:all 0.3s}
 .bottom-sheet-overlay.active{opacity:1;visibility:visible}
@@ -134,6 +158,14 @@ input{font-family:inherit}
 .bs-btn-secondary{border:1px solid var(--border);color:var(--text-secondary)}
 .bs-btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
 
+/* Score Bars */
+.score-bar-container{margin-bottom:12px}
+.score-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.score-bar-label{font-size:11px;color:var(--text-tertiary);width:52px;text-align:right;flex-shrink:0}
+.score-bar-track{flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:3px;transition:width 0.5s ease}
+.score-bar-val{font-size:11px;font-weight:600;color:var(--text-secondary);width:24px;text-align:right;flex-shrink:0}
+
 /* Leaderboard Modal */
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,22,18,0.5);z-index:300;opacity:0;visibility:hidden;transition:all 0.3s;display:flex;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.active{opacity:1;visibility:visible}
@@ -155,9 +187,32 @@ input{font-family:inherit}
 .lb-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lb-source{font-size:11px;color:var(--text-tertiary)}
 .lb-score{font-size:14px;font-weight:700;color:var(--accent);flex-shrink:0}
-.lb-dims{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:4px}
+.lb-score-bars{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:4px}
 .lb-dim{font-size:10px;color:var(--text-tertiary);text-align:center}
 .lb-dim-val{font-weight:600;color:var(--text-secondary)}
+
+/* Settings Modal */
+.settings-modal .modal{max-width:480px}
+.settings-section{margin-bottom:20px}
+.settings-section h3{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--text)}
+.settings-section p{font-size:12px;color:var(--text-tertiary);margin-bottom:8px;line-height:1.5}
+.settings-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color 0.2s}
+.settings-input:focus{border-color:var(--accent)}
+.settings-btn{padding:8px 20px;border-radius:var(--radius);font-size:13px;font-weight:500;background:var(--accent);color:#fff;transition:all 0.2s}
+.settings-btn:hover{background:var(--accent-light)}
+
+/* Legal Modal */
+.legal-modal .modal{max-width:560px}
+.legal-content{font-size:13px;line-height:1.8;color:var(--text-secondary)}
+.legal-content h4{font-size:15px;font-weight:600;color:var(--text);margin:16px 0 8px}
+.legal-content p{margin-bottom:8px}
+.legal-content ul{padding-left:20px;margin-bottom:8px}
+.legal-content li{margin-bottom:4px}
+
+/* Footer */
+.footer{text-align:center;padding:20px;font-size:11px;color:var(--text-tertiary);border-top:1px solid var(--border);background:var(--card)}
+.footer a{color:var(--accent);margin:0 8px;font-weight:500}
+.footer-links{margin-bottom:6px}
 
 /* Empty State */
 .empty-state{text-align:center;padding:60px 20px;color:var(--text-tertiary)}
@@ -179,10 +234,13 @@ input{font-family:inherit}
   .logo span{display:none}
   .search-box{min-width:0;order:10;flex-basis:100%}
   .btn-leaderboard span{display:none}
+  .source-filter{padding:0 16px}
   .categories{padding:0 16px}
   .main{padding:0 16px 100px}
   .grid{gap:12px}
   .status-bar{padding:6px 16px;font-size:11px}
+  .toast-container{right:10px;left:10px}
+  .toast{max-width:100%}
 }
 
 /* Animations */
@@ -199,6 +257,9 @@ input{font-family:inherit}
 </style>
 </head>
 <body>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
 
 <!-- Loading Overlay -->
 <div class="loading-overlay" id="loadingOverlay">
@@ -218,6 +279,12 @@ input{font-family:inherit}
       <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="搜索项目、论文、产品...">
     </div>
     <div class="header-actions">
+      <button class="btn-icon" id="btnRefresh" title="刷新数据">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      </button>
+      <button class="btn-icon" id="btnSettings" title="设置">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
       <button class="btn-icon" id="btnLang" title="Switch Language">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       </button>
@@ -232,14 +299,21 @@ input{font-family:inherit}
   </div>
 </header>
 
+<!-- Brand Bar -->
+<div class="brand-bar">长沙理工大学创业集团 | 开发者：安</div>
+
 <!-- Status Bar -->
 <div class="status-bar" id="statusBar">
   <span><span class="status-dot green" id="dotGithub"></span>GitHub</span>
   <span><span class="status-dot green" id="dotHN"></span>HackerNews</span>
   <span><span class="status-dot green" id="dotArxiv"></span>ArXiv</span>
   <span><span class="status-dot green" id="dotPH"></span>ProductHunt</span>
+  <span id="totalCount" style="font-weight:500"></span>
   <span style="margin-left:auto" id="lastUpdate" data-i18n="updating">更新中...</span>
 </div>
+
+<!-- Source Filter -->
+<div class="source-filter" id="sourceFilter"></div>
 
 <!-- Categories -->
 <div class="categories" id="categories"></div>
@@ -247,12 +321,24 @@ input{font-family:inherit}
 <!-- Main Content -->
 <main class="main">
   <div class="grid" id="cardGrid"></div>
+  <div class="load-more-sentinel" id="loadMoreSentinel"></div>
+  <div class="load-more-indicator" id="loadMoreIndicator" style="display:none"></div>
   <div class="empty-state" id="emptyState" style="display:none">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <h3 data-i18n="no_results">未找到相关内容</h3>
     <p data-i18n="no_results_desc">试试其他关键词或分类</p>
   </div>
 </main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="#" id="footerTerms" data-i18n="terms">用户协议</a>
+    <a href="#" id="footerPrivacy" data-i18n="privacy">隐私政策</a>
+    <a href="#" id="footerAbout" data-i18n="about">关于我们</a>
+  </div>
+  <div>长沙理工大学创业集团 &copy; 2024-2026 | 开发者：安</div>
+</footer>
 
 <!-- Bottom Sheet -->
 <div class="bottom-sheet-overlay" id="bsOverlay"></div>
@@ -274,10 +360,53 @@ input{font-family:inherit}
   </div>
 </div>
 
+<!-- Settings Modal -->
+<div class="modal-overlay settings-modal" id="settingsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" data-i18n="settings_title">设置</div>
+      <button class="modal-close" id="settingsClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-section">
+        <h3 data-i18n="github_token_label">GitHub Token</h3>
+        <p data-i18n="github_token_desc">输入 GitHub Personal Access Token 以避免 API 限流。Token 仅存储在本地浏览器中，不会上传到任何服务器。</p>
+        <input type="password" class="settings-input" id="githubTokenInput" placeholder="ghp_xxxxxxxxxxxx">
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="settings-btn" id="saveTokenBtn" data-i18n="save">保存</button>
+          <button class="settings-btn" id="clearTokenBtn" style="background:var(--border);color:var(--text-secondary)" data-i18n="clear">清除</button>
+        </div>
+        <div id="tokenStatus" style="margin-top:8px;font-size:12px"></div>
+      </div>
+      <div class="settings-section">
+        <h3 data-i18n="auto_refresh_label">自动刷新</h3>
+        <p data-i18n="auto_refresh_desc">数据每 30 分钟自动刷新一次。</p>
+        <div id="nextRefreshTime" style="font-size:12px;color:var(--text-tertiary)"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Legal Modal -->
+<div class="modal-overlay legal-modal" id="legalModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="legalModalTitle"></div>
+      <button class="modal-close" id="legalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="legal-content" id="legalContent"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ===================== CONFIG =====================
 const CONFIG = {
-  GITHUB_TOKEN: '',
   GITHUB_QUERIES: [
     'trending AI LLM', 'GPT agent multi-agent', 'AI coding vibecoding',
     'open source AI', 'machine learning transformer', 'diffusion model RAG',
@@ -287,9 +416,16 @@ const CONFIG = {
   HN_TOP_COUNT: 30,
   HN_SHOW_COUNT: 20,
   ARXIV_QUERY: 'cat:cs.AI OR cat:cs.CL OR cat:cs.LG',
-  ARXIV_PROXY: 'https://api.allorigins.win/raw?url=',
+  ARXIV_PROXIES: [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?',
+    'https://api.codetabs.com/v1/proxy?quest='
+  ],
   ARXIV_COUNT: 20,
-  CACHE_TTL: 30 * 60 * 1000, // 30 min
+  CACHE_TTL: 30 * 60 * 1000,
+  INITIAL_DISPLAY: 30,
+  LOAD_MORE_COUNT: 20,
+  AUTO_REFRESH_INTERVAL: 30 * 60 * 1000,
   AI_KEYWORDS: [
     'ai','artificial intelligence','machine learning','deep learning','neural network',
     'llm','gpt','claude','gemini','llama','mistral','transformer','diffusion',
@@ -341,6 +477,7 @@ const I18N = {
     source_hackernews: 'HackerNews',
     source_arxiv: 'ArXiv',
     source_producthunt: 'ProductHunt',
+    source_all: '全部',
     score_innovation: '创新性',
     score_impact: '影响力',
     score_activity: '活跃度',
@@ -357,8 +494,31 @@ const I18N = {
     error_github: 'GitHub API 加载失败',
     error_hn: 'HackerNews 加载失败',
     error_arxiv: 'ArXiv 加载失败',
+    error_ph: 'ProductHunt 加载失败',
     show_all: '显示全部',
-    show_favorites_only: '仅显示收藏'
+    show_favorites_only: '仅显示收藏',
+    settings_title: '设置',
+    github_token_label: 'GitHub Token',
+    github_token_desc: '输入 GitHub Personal Access Token 以避免 API 限流。Token 仅存储在本地浏览器中，不会上传到任何服务器。',
+    save: '保存',
+    clear: '清除',
+    token_saved: 'Token 已保存',
+    token_cleared: 'Token 已清除',
+    token_test_ok: 'Token 验证成功',
+    token_test_fail: 'Token 验证失败，请检查',
+    auto_refresh_label: '自动刷新',
+    auto_refresh_desc: '数据每 30 分钟自动刷新一次。',
+    next_refresh: '下次刷新: ',
+    terms: '用户协议',
+    privacy: '隐私政策',
+    about: '关于我们',
+    refresh_success: '数据刷新成功',
+    refresh_fail: '部分数据源刷新失败',
+    loading_more: '加载更多...',
+    no_more: '已加载全部数据',
+    total_count: '共 {count} 条数据',
+    ph_fetch_failed: 'ProductHunt 实时数据获取失败，使用预设数据',
+    ph_fetch_success: 'ProductHunt 实时数据获取成功'
   },
   en: {
     loading: 'Loading AI trends...',
@@ -396,6 +556,7 @@ const I18N = {
     source_hackernews: 'HackerNews',
     source_arxiv: 'ArXiv',
     source_producthunt: 'ProductHunt',
+    source_all: 'All',
     score_innovation: 'Innovation',
     score_impact: 'Impact',
     score_activity: 'Activity',
@@ -412,8 +573,117 @@ const I18N = {
     error_github: 'GitHub API failed',
     error_hn: 'HackerNews failed',
     error_arxiv: 'ArXiv failed',
+    error_ph: 'ProductHunt failed',
     show_all: 'Show All',
-    show_favorites_only: 'Favorites Only'
+    show_favorites_only: 'Favorites Only',
+    settings_title: 'Settings',
+    github_token_label: 'GitHub Token',
+    github_token_desc: 'Enter a GitHub Personal Access Token to avoid API rate limits. Token is stored locally in your browser only.',
+    save: 'Save',
+    clear: 'Clear',
+    token_saved: 'Token saved',
+    token_cleared: 'Token cleared',
+    token_test_ok: 'Token verified successfully',
+    token_test_fail: 'Token verification failed, please check',
+    auto_refresh_label: 'Auto Refresh',
+    auto_refresh_desc: 'Data refreshes automatically every 30 minutes.',
+    next_refresh: 'Next refresh: ',
+    terms: 'Terms of Service',
+    privacy: 'Privacy Policy',
+    about: 'About Us',
+    refresh_success: 'Data refreshed successfully',
+    refresh_fail: 'Some data sources failed to refresh',
+    loading_more: 'Loading more...',
+    no_more: 'All data loaded',
+    total_count: '{count} items total',
+    ph_fetch_failed: 'ProductHunt real-time fetch failed, using preset data',
+    ph_fetch_success: 'ProductHunt real-time data fetched successfully'
+  }
+};
+
+// ===================== LEGAL CONTENT =====================
+const LEGAL_CONTENT = {
+  terms: {
+    zh: `<h4>用户协议 / Terms of Service</h4>
+<p>欢迎使用 AI Pulse（以下简称"本服务"）。使用本服务即表示您同意以下条款。</p>
+<p>Welcome to AI Pulse (the "Service"). By using the Service, you agree to the following terms.</p>
+<h4>1. 服务描述 / Service Description</h4>
+<p>AI Pulse 是一个 AI 领域趋势聚合平台，数据来源于 GitHub、HackerNews、ArXiv、ProductHunt 等公开平台。我们不拥有这些数据的版权。</p>
+<p>AI Pulse is an AI trend aggregation platform. Data is sourced from GitHub, HackerNews, ArXiv, ProductHunt and other public platforms. We do not own the copyright of these data.</p>
+<h4>2. 使用限制 / Usage Restrictions</h4>
+<ul><li>不得将本服务用于任何违法用途</li><li>不得对本服务进行反向工程或恶意攻击</li><li>不得大量爬取本服务数据用于商业用途</li></ul>
+<ul><li>Do not use the Service for any illegal purpose</li><li>Do not reverse-engineer or maliciously attack the Service</li><li>Do not scrape Service data in bulk for commercial use</li></ul>
+<h4>3. 免责声明 / Disclaimer</h4>
+<p>本服务按"现状"提供，不做任何明示或暗示的保证。我们不对数据的准确性、完整性或及时性承担责任。</p>
+<p>The Service is provided "as is" without warranties of any kind. We are not responsible for the accuracy, completeness, or timeliness of data.</p>
+<h4>4. 变更 / Changes</h4>
+<p>我们保留随时修改本协议的权利。继续使用本服务即表示您接受修改后的协议。</p>
+<p>We reserve the right to modify these terms at any time. Continued use of the Service constitutes acceptance of the modified terms.</p>`,
+    en: `<h4>Terms of Service</h4>
+<p>Welcome to AI Pulse (the "Service"). By using the Service, you agree to the following terms.</p>
+<h4>1. Service Description</h4>
+<p>AI Pulse is an AI trend aggregation platform. Data is sourced from GitHub, HackerNews, ArXiv, ProductHunt and other public platforms. We do not own the copyright of these data.</p>
+<h4>2. Usage Restrictions</h4>
+<ul><li>Do not use the Service for any illegal purpose</li><li>Do not reverse-engineer or maliciously attack the Service</li><li>Do not scrape Service data in bulk for commercial use</li></ul>
+<h4>3. Disclaimer</h4>
+<p>The Service is provided "as is" without warranties of any kind. We are not responsible for the accuracy, completeness, or timeliness of data.</p>
+<h4>4. Changes</h4>
+<p>We reserve the right to modify these terms at any time. Continued use of the Service constitutes acceptance of the modified terms.</p>`
+  },
+  privacy: {
+    zh: `<h4>隐私政策 / Privacy Policy</h4>
+<p>本隐私政策说明 AI Pulse 如何处理您的信息。</p>
+<p>This privacy policy explains how AI Pulse handles your information.</p>
+<h4>1. 数据收集 / Data Collection</h4>
+<p>我们仅收集以下信息：</p>
+<ul><li>GitHub Token：仅存储在您的浏览器 localStorage 中，用于访问 GitHub API</li><li>语言偏好：存储在 localStorage 中</li><li>收藏列表：存储在 localStorage 中</li></ul>
+<p>We only collect the following:</p>
+<ul><li>GitHub Token: stored only in your browser's localStorage, used to access GitHub API</li><li>Language preference: stored in localStorage</li><li>Favorites list: stored in localStorage</li></ul>
+<h4>2. 数据使用 / Data Usage</h4>
+<p>上述数据仅用于改善您的使用体验，不会传输到任何第三方服务器。</p>
+<p>The above data is used solely to improve your experience and is not transmitted to any third-party servers.</p>
+<h4>3. 第三方服务 / Third-Party Services</h4>
+<p>本服务通过公开 API 访问 GitHub、HackerNews、ArXiv 等平台。这些平台有自己的隐私政策。</p>
+<p>This service accesses GitHub, HackerNews, ArXiv via public APIs. These platforms have their own privacy policies.</p>
+<h4>4. Cookie / Cookies</h4>
+<p>本服务不使用 Cookie。</p>
+<p>This service does not use cookies.</p>`,
+    en: `<h4>Privacy Policy</h4>
+<p>This privacy policy explains how AI Pulse handles your information.</p>
+<h4>1. Data Collection</h4>
+<p>We only collect the following:</p>
+<ul><li>GitHub Token: stored only in your browser's localStorage, used to access GitHub API</li><li>Language preference: stored in localStorage</li><li>Favorites list: stored in localStorage</li></ul>
+<h4>2. Data Usage</h4>
+<p>The above data is used solely to improve your experience and is not transmitted to any third-party servers.</p>
+<h4>3. Third-Party Services</h4>
+<p>This service accesses GitHub, HackerNews, ArXiv via public APIs. These platforms have their own privacy policies.</p>
+<h4>4. Cookies</h4>
+<p>This service does not use cookies.</p>`
+  },
+  about: {
+    zh: `<h4>关于我们 / About Us</h4>
+<p><strong>AI Pulse</strong> 是由长沙理工大学创业集团开发的 AI 领域趋势聚合平台。</p>
+<p><strong>AI Pulse</strong> is an AI trend aggregation platform developed by Changsha University of Science & Technology Entrepreneurship Group.</p>
+<h4>使命 / Mission</h4>
+<p>实时追踪 AI 领域最前沿动态，帮助开发者和研究者快速了解行业趋势。</p>
+<p>To track the latest AI trends in real-time, helping developers and researchers quickly understand industry dynamics.</p>
+<h4>数据来源 / Data Sources</h4>
+<ul><li>GitHub - 开源项目与代码仓库</li><li>HackerNews - 技术社区讨论</li><li>ArXiv - 学术论文预印本</li><li>ProductHunt - 科技产品发现</li></ul>
+<h4>开发者 / Developer</h4>
+<p>安 (An) - 长沙理工大学创业集团</p>
+<h4>技术栈 / Tech Stack</h4>
+<p>纯前端单文件应用，无需后端服务。使用原生 HTML/CSS/JavaScript 构建。</p>
+<p>Pure frontend single-file application, no backend required. Built with vanilla HTML/CSS/JavaScript.</p>`,
+    en: `<h4>About Us</h4>
+<p><strong>AI Pulse</strong> is an AI trend aggregation platform developed by Changsha University of Science & Technology Entrepreneurship Group.</p>
+<h4>Mission</h4>
+<p>To track the latest AI trends in real-time, helping developers and researchers quickly understand industry dynamics.</p>
+<h4>Data Sources</h4>
+<ul><li>GitHub - Open source projects and repositories</li><li>HackerNews - Tech community discussions</li><li>ArXiv - Academic paper preprints</li><li>ProductHunt - Tech product discovery</li></ul>
+<h4>Developer</h4>
+<p>An (安) - Changsha University of Science & Technology Entrepreneurship Group</p>
+<h4>Tech Stack</h4>
+<p>Pure frontend single-file application, no backend required. Built with vanilla HTML/CSS/JavaScript.</p>`
   }
 };
 
@@ -422,15 +692,36 @@ let state = {
   lang: localStorage.getItem('ai_pulse_lang') || 'zh',
   items: [],
   filteredItems: [],
+  displayedCount: CONFIG.INITIAL_DISPLAY,
   favorites: JSON.parse(localStorage.getItem('ai_pulse_favs') || '[]'),
   activeCategory: 'all',
+  activeSource: 'all',
   searchQuery: '',
   showFavoritesOnly: false,
   loading: { github: true, hn: true, arxiv: true, ph: true },
-  errors: { github: null, hn: null, arxiv: null, ph: null }
+  errors: { github: null, hn: null, arxiv: null, ph: null },
+  autoRefreshTimer: null,
+  isRefreshing: false,
+  allLoaded: false
 };
 
+function getGitHubToken() {
+  return localStorage.getItem('ai_pulse_github_token') || '';
+}
+
 function t(key) { return I18N[state.lang][key] || key; }
+
+// ===================== TOAST =====================
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => {
+    if (toast.parentNode) toast.parentNode.removeChild(toast);
+  }, 3000);
+}
 
 // ===================== CATEGORIES =====================
 const CATEGORIES = [
@@ -445,6 +736,32 @@ const CATEGORIES = [
   { id: 'education', icon: '🎓' }
 ];
 
+const SOURCES = [
+  { id: 'all', label_key: 'source_all' },
+  { id: 'github', label_key: 'source_github' },
+  { id: 'hackernews', label_key: 'source_hackernews' },
+  { id: 'arxiv', label_key: 'source_arxiv' },
+  { id: 'producthunt', label_key: 'source_producthunt' }
+];
+
+function renderSourceFilter() {
+  const el = document.getElementById('sourceFilter');
+  el.innerHTML = SOURCES.map(s => `
+    <button class="sf-btn ${state.activeSource === s.id ? 'active' : ''}" data-source="${s.id}">
+      ${t(s.label_key)}
+    </button>
+  `).join('');
+  el.querySelectorAll('.sf-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.activeSource = btn.dataset.source;
+      state.displayedCount = CONFIG.INITIAL_DISPLAY;
+      state.allLoaded = false;
+      renderSourceFilter();
+      applyFilters();
+    });
+  });
+}
+
 function renderCategories() {
   const el = document.getElementById('categories');
   el.innerHTML = CATEGORIES.map(c => `
@@ -456,6 +773,8 @@ function renderCategories() {
     btn.addEventListener('click', () => {
       state.activeCategory = btn.dataset.cat;
       state.showFavoritesOnly = false;
+      state.displayedCount = CONFIG.INITIAL_DISPLAY;
+      state.allLoaded = false;
       renderCategories();
       applyFilters();
     });
@@ -486,52 +805,87 @@ const PH_PRESETS = [
   { name: 'Anthropic Console', desc: 'Build with Claude - AI assistant by Anthropic.', tags: ['LLM','API'], upvotes: 5200, url: 'https://console.anthropic.com', category: 'llm' }
 ];
 
-// ===================== SCORING =====================
+// ===================== SCORING (Deterministic, no rand()) =====================
 function computeScores(item) {
   const s = { innovation:0, impact:0, activity:0, quality:0, community:0, growth:0, practical:0, popularity:0 };
-  const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const log10 = Math.log10;
+  const min = Math.min;
 
   if (item.source === 'github') {
     const stars = item.stats.stars || 0;
     const forks = item.stats.forks || 0;
-    s.popularity = Math.min(100, Math.log10(stars + 1) * 20);
-    s.community = Math.min(100, Math.log10(forks + 1) * 25);
-    s.activity = Math.min(100, rand(40, 90));
-    s.impact = Math.min(100, Math.log10(stars + 1) * 18 + rand(5, 20));
-    s.innovation = rand(50, 95);
-    s.quality = rand(55, 90);
-    s.growth = rand(40, 85);
-    s.practical = rand(45, 90);
+    const topicsCount = (item.tags || []).length;
+    const hasDesc = (item.desc && item.desc.length > 10) ? 1 : 0;
+    const descLen = (item.desc || '').length;
+    const hasHomepage = item.has_homepage ? 1 : 0;
+    const hasReadme = item.has_readme ? 1 : 0;
+    const langCount = item.language ? 1 : 0;
+    const recentUpdate = item.updated ? min(1, (Date.now() - new Date(item.updated).getTime()) / (30*86400000)) : 0;
+    const topicsRelevance = min(1, topicsCount / 10);
+
+    s.popularity = min(100, log10(stars + 1) * 20);
+    s.community = min(100, log10(forks + 1) * 25);
+    s.activity = min(100, log10(stars + 1) * 15 + (stars > 0 ? (forks / stars) * 30 : 0));
+    s.impact = min(100, log10(stars + 1) * 18);
+    s.innovation = min(100, topicsCount * 12 + hasDesc * 20);
+    s.quality = min(100, langCount * 15 + hasReadme * 25 + descLen / 10);
+    s.growth = min(100, (stars > 0 ? (stars / Math.max(1, forks)) * 5 : 0) + (1 - recentUpdate) * 30);
+    s.practical = min(100, hasHomepage * 20 + topicsRelevance * 30);
   } else if (item.source === 'hackernews') {
     const pts = item.stats.points || 0;
     const comms = item.stats.comments || 0;
-    s.popularity = Math.min(100, Math.log10(pts + 1) * 22);
-    s.community = Math.min(100, Math.log10(comms + 1) * 22);
-    s.impact = Math.min(100, Math.log10(pts + 1) * 18 + rand(5, 15));
-    s.activity = Math.min(100, rand(50, 95));
-    s.innovation = rand(45, 90);
-    s.quality = rand(50, 85);
-    s.growth = rand(40, 80);
-    s.practical = rand(40, 85);
+    const titleLen = (item.title || '').length;
+    const titleScore = min(100, titleLen * 2);
+    const text = ((item.title || '') + ' ' + (item.desc || '')).toLowerCase();
+    const kwMatch = CONFIG.AI_KEYWORDS.filter(kw => text.includes(kw)).length;
+    const keywordScore = min(100, kwMatch * 15);
+    const recencyScore = item.time ? min(100, Math.max(0, 100 - (Date.now() / 1000 - item.time) / 3600)) : 50;
+    const urlDomain = item.url ? min(100, 40 + (item.url.startsWith('https://github.com') ? 30 : item.url.startsWith('https://arxiv.org') ? 25 : 15)) : 40;
+
+    s.popularity = min(100, log10(pts + 1) * 22);
+    s.community = min(100, log10(comms + 1) * 22);
+    s.impact = min(100, log10(pts + 1) * 18);
+    s.activity = min(100, comms * 2 + pts * 0.5);
+    s.innovation = keywordScore;
+    s.quality = titleScore;
+    s.growth = recencyScore;
+    s.practical = urlDomain;
   } else if (item.source === 'arxiv') {
-    s.innovation = rand(60, 98);
-    s.quality = rand(55, 95);
-    s.impact = rand(40, 85);
-    s.popularity = rand(30, 75);
-    s.community = rand(20, 60);
-    s.activity = rand(50, 90);
-    s.growth = rand(35, 75);
-    s.practical = rand(25, 70);
+    const authorCount = (item.authors || []).length;
+    const catCount = (item.tags || []).length;
+    const abstractLen = (item.desc || '').length;
+    const abstractScore = min(100, abstractLen / 5);
+    const categories = item.tags || [];
+    const catWeight = categories.some(c => c.includes('cs.AI')) ? 90 :
+                      categories.some(c => c.includes('cs.CL')) ? 85 :
+                      categories.some(c => c.includes('cs.LG')) ? 80 :
+                      categories.some(c => c.includes('cs.CV')) ? 78 : 70;
+    const text = ((item.title || '') + ' ' + (item.desc || '')).toLowerCase();
+    const kwMatch = CONFIG.AI_KEYWORDS.filter(kw => text.includes(kw)).length;
+    const keywordScore = min(100, kwMatch * 12);
+    const recencyScore = item.published ? min(100, Math.max(0, 100 - (Date.now() - new Date(item.published).getTime()) / (7*86400000))) : 50;
+
+    s.innovation = min(100, authorCount * 8 + catCount * 5);
+    s.quality = abstractScore;
+    s.impact = catWeight;
+    s.popularity = 30;
+    s.community = 20;
+    s.activity = recencyScore;
+    s.growth = 30;
+    s.practical = keywordScore;
   } else if (item.source === 'producthunt') {
     const ups = item.stats.upvotes || 0;
-    s.popularity = Math.min(100, Math.log10(ups + 1) * 18);
-    s.practical = rand(55, 92);
-    s.innovation = rand(50, 90);
-    s.impact = rand(40, 80);
-    s.quality = rand(50, 85);
-    s.community = rand(30, 70);
-    s.activity = rand(45, 85);
-    s.growth = rand(40, 80);
+    const descLen = (item.desc || '').length;
+    const descScore = min(100, descLen / 2);
+
+    s.popularity = min(100, log10(ups + 1) * 18);
+    s.practical = 60;
+    s.innovation = 50;
+    s.impact = min(100, log10(ups + 1) * 15);
+    s.quality = descScore;
+    s.community = 30;
+    s.activity = 40;
+    s.growth = 35;
   }
 
   const total = Math.round(Object.values(s).reduce((a, b) => a + b, 0) / 8);
@@ -573,23 +927,39 @@ function setCache(key, data) {
     localStorage.setItem('ai_pulse_cache_' + key, JSON.stringify({ data, ts: Date.now() }));
   } catch {}
 }
+function clearAllCache() {
+  Object.keys(localStorage).forEach(k => {
+    if (k.startsWith('ai_pulse_cache_')) localStorage.removeItem(k);
+  });
+}
 
 // ===================== API: GITHUB =====================
 async function fetchGitHub() {
   const cache = getCache('github');
   if (cache) { state.loading.github = false; updateStatus('github', 'green'); return cache; }
 
+  const token = getGitHubToken();
   const allItems = [];
   const perPage = 5;
   const seen = new Set();
 
+  if (!token) {
+    showToast(state.lang === 'zh' ? '未设置 GitHub Token，可能触发 API 限流。请在设置中添加 Token。' : 'No GitHub Token set. May hit rate limits. Please add a token in Settings.', 'warning');
+  }
+
   for (const q of CONFIG.GITHUB_QUERIES) {
     try {
       const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(q + ' stars:>100')}&sort=stars&order=desc&per_page=${perPage}`;
-      const res = await fetch(url, {
-        headers: { 'Authorization': `token ${CONFIG.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
-      });
-      if (!res.ok) continue;
+      const headers = { 'Accept': 'application/vnd.github.v3+json' };
+      if (token) headers['Authorization'] = `token ${token}`;
+      const res = await fetch(url, { headers });
+      if (!res.ok) {
+        if (res.status === 403) {
+          state.errors.github = state.lang === 'zh' ? 'API 限流，请设置 GitHub Token' : 'Rate limited, please set GitHub Token';
+          showToast(t('error_github') + ': ' + state.errors.github, 'error');
+        }
+        continue;
+      }
       const data = await res.json();
       if (data.items) {
         for (const repo of data.items) {
@@ -606,14 +976,21 @@ async function fetchGitHub() {
             stats: { stars: repo.stargazers_count, forks: repo.forks_count },
             language: repo.language,
             updated: repo.updated_at,
-            avatar: repo.owner?.avatar_url
+            avatar: repo.owner?.avatar_url,
+            has_homepage: !!(repo.homepage && repo.homepage.length > 5),
+            has_readme: true
           });
         }
       }
-    } catch {}
+    } catch (e) {
+      console.error('GitHub fetch error for query:', q, e);
+    }
   }
 
   state.loading.github = false;
+  if (allItems.length === 0 && !state.errors.github) {
+    state.errors.github = t('error_github');
+  }
   updateStatus('github', allItems.length > 0 ? 'green' : 'red');
   setCache('github', allItems);
   return allItems;
@@ -644,94 +1021,194 @@ async function fetchHackerNews() {
     } catch { return []; }
   }
 
-  const [topStories, showStories] = await Promise.all([
-    getStories('top', CONFIG.HN_TOP_COUNT),
-    getStories('show', CONFIG.HN_SHOW_COUNT)
-  ]);
+  try {
+    const [topStories, showStories] = await Promise.all([
+      getStories('top', CONFIG.HN_TOP_COUNT),
+      getStories('show', CONFIG.HN_SHOW_COUNT)
+    ]);
 
-  const seen = new Set();
-  for (const s of [...topStories, ...showStories]) {
-    if (seen.has(s.id)) continue;
-    seen.add(s.id);
-    allItems.push({
-      id: 'hn_' + s.id,
-      source: 'hackernews',
-      title: s.title || '',
-      desc: s.url || `https://news.ycombinator.com/item?id=${s.id}`,
-      url: s.url || `https://news.ycombinator.com/item?id=${s.id}`,
-      tags: [],
-      category: '',
-      stats: { points: s.score || 0, comments: s.descendants || 0 },
-      by: s.by,
-      time: s.time
-    });
+    const seen = new Set();
+    for (const s of [...topStories, ...showStories]) {
+      if (seen.has(s.id)) continue;
+      seen.add(s.id);
+      // desc should be empty string or truncated text, not URL (Issue #10)
+      const desc = '';
+      allItems.push({
+        id: 'hn_' + s.id,
+        source: 'hackernews',
+        title: s.title || '',
+        desc: desc,
+        url: s.url || `https://news.ycombinator.com/item?id=${s.id}`,
+        tags: [],
+        category: '',
+        stats: { points: s.score || 0, comments: s.descendants || 0 },
+        by: s.by,
+        time: s.time
+      });
+    }
+  } catch (e) {
+    console.error('HackerNews fetch error:', e);
+    state.errors.hn = e.message;
   }
 
   state.loading.hn = false;
-  updateStatus('hn', allItems.length > 0 ? 'green' : 'yellow');
+  updateStatus('hn', allItems.length > 0 ? 'green' : (state.errors.hn ? 'red' : 'yellow'));
   setCache('hn', allItems);
   return allItems;
 }
 
-// ===================== API: ARXIV =====================
+// ===================== API: ARXIV (with proxy fallback) =====================
 async function fetchArXiv() {
   const cache = getCache('arxiv');
   if (cache) { state.loading.arxiv = false; updateStatus('arxiv', 'green'); return cache; }
 
-  try {
-    const query = encodeURIComponent(CONFIG.ARXIV_QUERY);
-    const arxivUrl = `https://export.arxiv.org/api/query?search_query=${query}&sortBy=submittedDate&sortOrder=descending&max_results=${CONFIG.ARXIV_COUNT}`;
-    const proxyUrl = CONFIG.ARXIV_PROXY + encodeURIComponent(arxivUrl);
-    const res = await fetch(proxyUrl);
-    if (!res.ok) throw new Error('ArXiv proxy failed');
-    const text = await res.text();
+  const query = encodeURIComponent(CONFIG.ARXIV_QUERY);
+  const arxivUrl = `https://export.arxiv.org/api/query?search_query=${query}&sortBy=submittedDate&sortOrder=descending&max_results=${CONFIG.ARXIV_COUNT}`;
 
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(text, 'text/xml');
-    const entries = xml.querySelectorAll('entry');
+  let lastError = null;
+  for (const proxy of CONFIG.ARXIV_PROXIES) {
+    try {
+      const proxyUrl = proxy + encodeURIComponent(arxivUrl);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+      if (!res.ok) { lastError = new Error(`Proxy ${proxy} returned ${res.status}`); continue; }
+      const text = await res.text();
 
-    const items = [];
-    entries.forEach(entry => {
-      const id = entry.querySelector('id')?.textContent || '';
-      const title = (entry.querySelector('title')?.textContent || '').replace(/\s+/g, ' ').trim();
-      const summary = (entry.querySelector('summary')?.textContent || '').replace(/\s+/g, ' ').trim();
-      const authors = Array.from(entry.querySelectorAll('author name')).map(a => a.textContent).slice(0, 3);
-      const published = entry.querySelector('published')?.textContent || '';
-      const categories = Array.from(entry.querySelectorAll('category')).map(c => c.getAttribute('term'));
-      const link = entry.querySelector('link[title="pdf"]')?.href || id;
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(text, 'text/xml');
+      const entries = xml.querySelectorAll('entry');
 
-      items.push({
-        id: 'arxiv_' + id.split('/').pop(),
-        source: 'arxiv',
-        title: title,
-        desc: summary.slice(0, 300),
-        url: link,
-        tags: categories.slice(0, 3),
-        category: '',
-        stats: { citations: 0 },
-        authors: authors,
-        published: published
+      if (entries.length === 0) { lastError = new Error('No entries from proxy'); continue; }
+
+      const items = [];
+      entries.forEach(entry => {
+        const id = entry.querySelector('id')?.textContent || '';
+        const title = (entry.querySelector('title')?.textContent || '').replace(/\s+/g, ' ').trim();
+        const summary = (entry.querySelector('summary')?.textContent || '').replace(/\s+/g, ' ').trim();
+        const authors = Array.from(entry.querySelectorAll('author name')).map(a => a.textContent).slice(0, 3);
+        const published = entry.querySelector('published')?.textContent || '';
+        const categories = Array.from(entry.querySelectorAll('category')).map(c => c.getAttribute('term'));
+        const link = entry.querySelector('link[title="pdf"]')?.href || id;
+
+        items.push({
+          id: 'arxiv_' + id.split('/').pop(),
+          source: 'arxiv',
+          title: title,
+          desc: summary.slice(0, 300),
+          url: link,
+          tags: categories.slice(0, 3),
+          category: '',
+          stats: { citations: 0 },
+          authors: authors,
+          published: published
+        });
       });
-    });
 
-    state.loading.arxiv = false;
-    updateStatus('arxiv', items.length > 0 ? 'green' : 'red');
-    setCache('arxiv', items);
-    return items;
-  } catch (e) {
-    console.error('ArXiv fetch error:', e);
-    state.loading.arxiv = false;
-    state.errors.arxiv = e.message;
-    updateStatus('arxiv', 'red');
-    return [];
+      state.loading.arxiv = false;
+      updateStatus('arxiv', items.length > 0 ? 'green' : 'red');
+      setCache('arxiv', items);
+      return items;
+    } catch (e) {
+      lastError = e;
+      console.warn('ArXiv proxy failed:', proxy, e.message);
+    }
   }
+
+  console.error('All ArXiv proxies failed:', lastError);
+  state.loading.arxiv = false;
+  state.errors.arxiv = lastError ? lastError.message : t('error_arxiv');
+  updateStatus('arxiv', 'red');
+  showToast(t('error_arxiv') + ': ' + (lastError ? lastError.message : ''), 'error');
+  return [];
 }
 
-// ===================== PRODUCTHUNT PRESETS =====================
-function fetchProductHunt() {
+// ===================== PRODUCTHUNT (try real, fallback to presets) =====================
+async function fetchProductHunt() {
   const cache = getCache('ph');
   if (cache) { state.loading.ph = false; updateStatus('ph', 'green'); return cache; }
 
+  // Try to fetch real ProductHunt data via CORS proxy
+  const phProxies = [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?',
+    'https://api.codetabs.com/v1/proxy?quest='
+  ];
+  const phUrl = 'https://www.producthunt.com/topics/artificial-intelligence';
+
+  let realItems = null;
+  for (const proxy of phProxies) {
+    try {
+      const proxyUrl = proxy + encodeURIComponent(phUrl);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+      if (!res.ok) continue;
+      const html = await res.text();
+
+      // Parse ProductHunt HTML for product data
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Try to extract from JSON-LD or meta tags
+      const jsonLd = doc.querySelectorAll('script[type="application/ld+json"]');
+      let products = [];
+      for (const script of jsonLd) {
+        try {
+          const data = JSON.parse(script.textContent);
+          if (data['@type'] === 'ItemList' && data.itemListElement) {
+            products = data.itemListElement.map(el => ({
+              name: el.name || '',
+              desc: el.description || '',
+              url: el.url || '',
+              upvotes: 0
+            }));
+          }
+        } catch {}
+      }
+
+      // Fallback: try to extract from HTML structure
+      if (products.length === 0) {
+        const productCards = doc.querySelectorAll('[data-test="post-item"], .post-item, [class*="PostCard"], [class*="post-card"]');
+        productCards.forEach(card => {
+          const nameEl = card.querySelector('h3, h2, [class*="title"], [class*="name"]');
+          const descEl = card.querySelector('p, [class*="tagline"], [class*="description"]');
+          const linkEl = card.querySelector('a[href]');
+          if (nameEl) {
+            products.push({
+              name: nameEl.textContent.trim(),
+              desc: descEl ? descEl.textContent.trim() : '',
+              url: linkEl ? linkEl.href : '',
+              upvotes: 0
+            });
+          }
+        });
+      }
+
+      if (products.length > 0) {
+        realItems = products.filter(p => p.name).slice(0, 20).map((p, i) => ({
+          id: 'ph_real_' + i,
+          source: 'producthunt',
+          title: p.name,
+          desc: p.desc || '',
+          url: p.url || '#',
+          tags: ['AI'],
+          category: '',
+          stats: { upvotes: p.upvotes || 0 }
+        }));
+        break;
+      }
+    } catch (e) {
+      console.warn('ProductHunt proxy failed:', e.message);
+    }
+  }
+
+  if (realItems && realItems.length > 0) {
+    showToast(t('ph_fetch_success'), 'success');
+    state.loading.ph = false;
+    updateStatus('ph', 'green');
+    setCache('ph', realItems);
+    return realItems;
+  }
+
+  // Fallback to presets
+  showToast(t('ph_fetch_failed'), 'warning');
   const items = PH_PRESETS.map((p, i) => ({
     id: 'ph_' + i,
     source: 'producthunt',
@@ -760,6 +1237,22 @@ function updateLastUpdate() {
   const now = new Date();
   const timeStr = now.toLocaleTimeString(state.lang === 'zh' ? 'zh-CN' : 'en-US', { hour: '2-digit', minute: '2-digit' });
   el.textContent = t('updated_at') + timeStr;
+}
+
+function updateTotalCount() {
+  const el = document.getElementById('totalCount');
+  el.textContent = t('total_count').replace('{count}', state.items.length);
+}
+
+function updateNextRefresh() {
+  const el = document.getElementById('nextRefreshTime');
+  if (!el) return;
+  if (state.autoRefreshTimer) {
+    const remaining = Math.max(0, CONFIG.AUTO_REFRESH_INTERVAL - (Date.now() % CONFIG.AUTO_REFRESH_INTERVAL));
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    el.textContent = t('next_refresh') + `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
 }
 
 // ===================== RENDER =====================
@@ -818,15 +1311,21 @@ function renderCards() {
   const grid = document.getElementById('cardGrid');
   const empty = document.getElementById('emptyState');
   const items = state.filteredItems;
+  const toShow = items.slice(0, state.displayedCount);
 
-  if (items.length === 0) {
+  if (items.length === 0 && !state.loading.github && !state.loading.hn && !state.loading.arxiv && !state.loading.ph) {
     grid.innerHTML = '';
     empty.style.display = 'block';
     return;
   }
 
+  if (items.length === 0 && (state.loading.github || state.loading.hn || state.loading.arxiv || state.loading.ph)) {
+    // Keep skeletons while loading
+    return;
+  }
+
   empty.style.display = 'none';
-  grid.innerHTML = items.map(item => {
+  grid.innerHTML = toShow.map(item => {
     const fav = isFavorited(item.id);
     const catLabel = item.category ? t('cat_' + item.category) : '';
     return `
@@ -860,6 +1359,16 @@ function renderCards() {
     </div>`;
   }).join('');
 
+  // Update load more state
+  state.allLoaded = state.displayedCount >= items.length;
+  const indicator = document.getElementById('loadMoreIndicator');
+  if (state.allLoaded && items.length > 0) {
+    indicator.style.display = 'block';
+    indicator.textContent = t('no_more');
+  } else {
+    indicator.style.display = 'none';
+  }
+
   // Event listeners
   grid.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', (e) => {
@@ -874,6 +1383,32 @@ function renderCards() {
       toggleFavorite(btn.dataset.fav);
     });
   });
+}
+
+// ===================== INFINITE SCROLL =====================
+function setupInfiniteScroll() {
+  const sentinel = document.getElementById('loadMoreSentinel');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !state.allLoaded) {
+        loadMore();
+      }
+    });
+  }, { rootMargin: '200px' });
+  observer.observe(sentinel);
+}
+
+function loadMore() {
+  if (state.allLoaded) return;
+  const indicator = document.getElementById('loadMoreIndicator');
+  indicator.style.display = 'block';
+  indicator.textContent = t('loading_more');
+
+  // Simulate a small delay for UX
+  setTimeout(() => {
+    state.displayedCount += CONFIG.LOAD_MORE_COUNT;
+    renderCards();
+  }, 300);
 }
 
 // ===================== BOTTOM SHEET =====================
@@ -893,6 +1428,13 @@ function openBottomSheet(item) {
     { key: 'practical', label: t('score_practical') },
     { key: 'popularity', label: t('score_popularity') }
   ] : [];
+
+  const scoreBarColor = (val) => {
+    if (val >= 80) return '#4CAF50';
+    if (val >= 60) return '#8BC34A';
+    if (val >= 40) return '#FF9800';
+    return '#F44336';
+  };
 
   content.innerHTML = `
     <div class="bs-source card-source ${getSourceClass(item.source)}">${getSourceLabel(item.source)}</div>
@@ -923,16 +1465,17 @@ function openBottomSheet(item) {
       `}
     </div>
     ${scoreDims.length > 0 ? `
-      <div style="margin-bottom:16px">
+      <div class="score-bar-container">
         <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary)">${t('leaderboard_title')}</div>
-        <div class="lb-dims" style="grid-template-columns:repeat(4,1fr)">
-          ${scoreDims.map(d => `
-            <div class="lb-dim">
-              <div style="font-size:10px;color:var(--text-tertiary)">${d.label}</div>
-              <div class="lb-dim-val">${item.scores[d.key]}</div>
+        ${scoreDims.map(d => `
+          <div class="score-bar-row">
+            <div class="score-bar-label">${d.label}</div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill" style="width:${item.scores[d.key]}%;background:${scoreBarColor(item.scores[d.key])}"></div>
             </div>
-          `).join('')}
-        </div>
+            <div class="score-bar-val">${item.scores[d.key]}</div>
+          </div>
+        `).join('')}
       </div>
     ` : ''}
     <div class="bs-actions">
@@ -969,12 +1512,23 @@ function openLeaderboard() {
 
   body.innerHTML = sorted.map((item, i) => {
     const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'normal';
+    const dims = item.scores ? [
+      { key: 'innovation', label: t('score_innovation') },
+      { key: 'impact', label: t('score_impact') },
+      { key: 'activity', label: t('score_activity') },
+      { key: 'quality', label: t('score_quality') }
+    ] : [];
     return `
     <div class="lb-item" data-id="${item.id}" style="cursor:pointer">
       <div class="lb-rank ${rankClass}">${i + 1}</div>
       <div class="lb-info">
         <div class="lb-name">${escHtml(item.title)}</div>
         <div class="lb-source">${getSourceLabel(item.source)}</div>
+        ${dims.length > 0 ? `
+          <div class="lb-score-bars">
+            ${dims.map(d => `<div class="lb-dim"><div style="font-size:9px;color:var(--text-tertiary)">${d.label}</div><div class="lb-dim-val">${item.scores[d.key]}</div></div>`).join('')}
+          </div>
+        ` : ''}
       </div>
       <div class="lb-score">${item.scores.total}</div>
     </div>`;
@@ -997,9 +1551,88 @@ function closeLeaderboard() {
   document.getElementById('lbModal').classList.remove('active');
 }
 
+// ===================== SETTINGS =====================
+function openSettings() {
+  const modal = document.getElementById('settingsModal');
+  const input = document.getElementById('githubTokenInput');
+  input.value = getGitHubToken();
+  updateTokenStatus();
+  updateNextRefresh();
+  modal.classList.add('active');
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('active');
+}
+
+function updateTokenStatus() {
+  const status = document.getElementById('tokenStatus');
+  const token = getGitHubToken();
+  if (token) {
+    status.innerHTML = `<span style="color:#4CAF50">●</span> ${state.lang === 'zh' ? 'Token 已配置' : 'Token configured'} (${token.slice(0, 8)}...)`;
+  } else {
+    status.innerHTML = `<span style="color:#FF9800">●</span> ${state.lang === 'zh' ? '未配置 Token（可能触发限流）' : 'No token (may hit rate limits)'}`;
+  }
+}
+
+async function saveToken() {
+  const input = document.getElementById('githubTokenInput');
+  const token = input.value.trim();
+  if (token) {
+    localStorage.setItem('ai_pulse_github_token', token);
+    showToast(t('token_saved'), 'success');
+    // Test the token
+    try {
+      const res = await fetch('https://api.github.com/user', {
+        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (res.ok) {
+        const user = await res.json();
+        document.getElementById('tokenStatus').innerHTML = `<span style="color:#4CAF50">●</span> ${t('token_test_ok')} (${user.login})`;
+      } else {
+        document.getElementById('tokenStatus').innerHTML = `<span style="color:#F44336">●</span> ${t('token_test_fail')} (${res.status})`;
+      }
+    } catch {
+      document.getElementById('tokenStatus').innerHTML = `<span style="color:#FF9800">●</span> ${state.lang === 'zh' ? '无法验证 Token（网络问题）' : 'Cannot verify token (network issue)'}`;
+    }
+  } else {
+    localStorage.removeItem('ai_pulse_github_token');
+    showToast(t('token_cleared'), 'info');
+    updateTokenStatus();
+  }
+}
+
+function clearToken() {
+  localStorage.removeItem('ai_pulse_github_token');
+  document.getElementById('githubTokenInput').value = '';
+  showToast(t('token_cleared'), 'info');
+  updateTokenStatus();
+}
+
+// ===================== LEGAL =====================
+function openLegal(type) {
+  const modal = document.getElementById('legalModal');
+  const title = document.getElementById('legalModalTitle');
+  const content = document.getElementById('legalContent');
+  const langData = LEGAL_CONTENT[type];
+  if (!langData) return;
+  title.textContent = t(type);
+  content.innerHTML = langData[state.lang] || langData.zh;
+  modal.classList.add('active');
+}
+
+function closeLegal() {
+  document.getElementById('legalModal').classList.remove('active');
+}
+
 // ===================== FILTERS =====================
 function applyFilters() {
   let items = [...state.items];
+
+  // Source filter
+  if (state.activeSource !== 'all') {
+    items = items.filter(i => i.source === state.activeSource);
+  }
 
   // Category filter
   if (state.activeCategory !== 'all') {
@@ -1070,12 +1703,79 @@ function updateI18n() {
   });
   document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
   document.title = state.lang === 'zh' ? 'AI Pulse - AI 趋势雷达' : 'AI Pulse - AI Trend Radar';
+  updateTotalCount();
+}
+
+// ===================== AUTO REFRESH =====================
+function startAutoRefresh() {
+  if (state.autoRefreshTimer) clearInterval(state.autoRefreshTimer);
+  state.autoRefreshTimer = setInterval(() => {
+    refreshData(true);
+  }, CONFIG.AUTO_REFRESH_INTERVAL);
+
+  // Update countdown every second
+  setInterval(updateNextRefresh, 1000);
+}
+
+async function refreshData(silent = false) {
+  if (state.isRefreshing) return;
+  state.isRefreshing = true;
+
+  clearAllCache();
+  state.loading = { github: true, hn: true, arxiv: true, ph: true };
+  state.errors = { github: null, hn: null, arxiv: null, ph: null };
+  state.displayedCount = CONFIG.INITIAL_DISPLAY;
+  state.allLoaded = false;
+
+  if (!silent) {
+    renderSkeletons(8);
+  }
+
+  try {
+    const [ghItems, hnItems, arxivItems, phItems] = await Promise.all([
+      fetchGitHub(),
+      fetchHackerNews(),
+      fetchArXiv(),
+      fetchProductHunt()
+    ]);
+
+    let allItems = [...ghItems, ...hnItems, ...arxivItems, ...phItems];
+    allItems.forEach(item => {
+      if (!item.category) item.category = classifyItem(item);
+    });
+    allItems = allItems.map(item => computeScores(item));
+
+    const seen = new Set();
+    allItems = allItems.filter(item => {
+      const key = item.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 40);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    state.items = allItems;
+    applyFilters();
+    updateLastUpdate();
+    updateTotalCount();
+
+    if (!silent) {
+      showToast(t('refresh_success'), 'success');
+    }
+  } catch (e) {
+    console.error('Refresh error:', e);
+    if (!silent) {
+      showToast(t('refresh_fail'), 'error');
+    }
+  }
+
+  state.isRefreshing = false;
 }
 
 // ===================== INIT =====================
 async function init() {
   updateI18n();
   renderCategories();
+  renderSourceFilter();
   renderSkeletons(8);
 
   // Fetch all data sources in parallel
@@ -1083,7 +1783,7 @@ async function init() {
     fetchGitHub(),
     fetchHackerNews(),
     fetchArXiv(),
-    Promise.resolve(fetchProductHunt())
+    fetchProductHunt()
   ]);
 
   // Combine and process
@@ -1109,6 +1809,13 @@ async function init() {
   state.items = allItems;
   applyFilters();
   updateLastUpdate();
+  updateTotalCount();
+
+  // Setup infinite scroll
+  setupInfiniteScroll();
+
+  // Start auto refresh
+  startAutoRefresh();
 
   // Hide loading overlay
   setTimeout(() => {
@@ -1127,6 +1834,8 @@ document.addEventListener('DOMContentLoaded', () => {
     searchTimeout = setTimeout(() => {
       state.searchQuery = e.target.value.trim();
       state.showFavoritesOnly = false;
+      state.displayedCount = CONFIG.INITIAL_DISPLAY;
+      state.allLoaded = false;
       applyFilters();
     }, 300);
   });
@@ -1137,6 +1846,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('ai_pulse_lang', state.lang);
     updateI18n();
     renderCategories();
+    renderSourceFilter();
     applyFilters();
     updateLastUpdate();
   });
@@ -1148,8 +1858,24 @@ document.addEventListener('DOMContentLoaded', () => {
       state.activeCategory = 'all';
       renderCategories();
     }
+    state.displayedCount = CONFIG.INITIAL_DISPLAY;
+    state.allLoaded = false;
     applyFilters();
   });
+
+  // Refresh button
+  document.getElementById('btnRefresh').addEventListener('click', () => {
+    refreshData(false);
+  });
+
+  // Settings
+  document.getElementById('btnSettings').addEventListener('click', openSettings);
+  document.getElementById('settingsClose').addEventListener('click', closeSettings);
+  document.getElementById('settingsModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeSettings();
+  });
+  document.getElementById('saveTokenBtn').addEventListener('click', saveToken);
+  document.getElementById('clearTokenBtn').addEventListener('click', clearToken);
 
   // Leaderboard
   document.getElementById('btnLeaderboard').addEventListener('click', openLeaderboard);
@@ -1160,6 +1886,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Bottom sheet
   document.getElementById('bsOverlay').addEventListener('click', closeBottomSheet);
+
+  // Legal pages
+  document.getElementById('footerTerms').addEventListener('click', (e) => { e.preventDefault(); openLegal('terms'); });
+  document.getElementById('footerPrivacy').addEventListener('click', (e) => { e.preventDefault(); openLegal('privacy'); });
+  document.getElementById('footerAbout').addEventListener('click', (e) => { e.preventDefault(); openLegal('about'); });
+  document.getElementById('legalClose').addEventListener('click', closeLegal);
+  document.getElementById('legalModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeLegal();
+  });
 
   // Touch support for bottom sheet
   let startY = 0;
@@ -1177,6 +1912,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape') {
       closeBottomSheet();
       closeLeaderboard();
+      closeSettings();
+      closeLegal();
     }
   });
 });
